@@ -12,11 +12,11 @@ function karla_print_index_page(){
 }
 function ka_print_section_pages($section){
 
-    global $ka_section;
+    global $ka_page_sections;
 
     try {
-       
-        $section_pages = $ka_section->getSectionPages($section);
+        
+        $section_pages = $ka_page_sections->getSectionPages($section->ID);
         
         if($section_pages != false){
             
@@ -49,20 +49,20 @@ function print_back_link(){?>
     <a href="<?php print admin_url( 'admin.php?page=my_section_plugin' )?>">Back</a>
 <?php;}
 
-function ka_print_pages_checkboxes(){
+function ka_print_pages_checkboxes($SectionID , $pages ){
 
-global $ka_pages;
-
-$pages = $ka_pages->getPages();?>
+global $ka_page_sections;?>
 
 
     <label for="my_meta_box_text">This section belongs to:</label>
     <br>
     <br>
+
     <?php foreach($pages as $page):?>
-    <?php $page_sections = get_post_meta($page->ID,'_page_section')?>
-   	<input type="checkbox" name="pages-meta-box-sidebar[]" value="<?php print $page->ID?>" <?php print (in_array_r($post->ID, $page_sections ) == true ? 'checked="true"' : "") ?> > <?php print $page->post_title?>
+ 
+   	<input type="checkbox" name="pages-meta-box-sidebar[]" value="<?php print $page->ID?>" <?php print $ka_page_sections->page_has_section($page->ID , $SectionID) == true ? 'checked="true"' : "" ?> > <?php print $page->post_title?>
    	<br>
+
    <?php endforeach;?>
     <?php 
 }?>

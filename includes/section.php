@@ -38,28 +38,6 @@ class Ka_section{
 
 	}
 
-	public function getSectionPages($section){
-		$args = array(
-        'post_type'     => 'page',
-        'post_status'   => 'publish',
-        'meta_query' => array(
-            array(
-                'key' => $this->page_section_meta_key,
-                'value' => $section->ID,
-                'compare' => "LIKE"
-            )
-        )
-        );
-        $page_query = new WP_Query($args);
-
-        if($page_query->have_posts()){
-        	
-        	return $page_query->get_posts();
-        }else{
-        	return false;
-        }
-
-	}
 	public function getSections(){
 		return $this->sections;
 	}

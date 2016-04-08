@@ -10,22 +10,29 @@ License:     GPL2
 */
 
 
-add_action("admin_menu" , 'karla_add_menu_to_admin_menu');
-add_action("init" , "karla_install");
 
+add_action("init" , "karla_install");
+add_action("admin_menu" , 'karla_add_menu_to_admin_menu');
 
     $ka_pages;
-    $ka_section;  
+    $ka_section;
+    $ka_page_sections;
+
 function karla_install(){
 
 include_once( plugin_dir_path( __FILE__ ) . 'includes/page.php' );
-include_once( plugin_dir_path( __FILE__ ) . 'includes/ka_section.php' );
+include_once( plugin_dir_path( __FILE__ ) . 'includes/section.php' );
+include_once( plugin_dir_path( __FILE__ ) . 'includes/page_sections.php' );
 include_once( plugin_dir_path( __FILE__ ) . 'includes/print_functions.php' );
 global $ka_section;
 global $ka_pages;
+global $ka_page_sections;
 
     $ka_section = new Ka_section();
     $ka_pages = new Ka_page();
+    $ka_page_sections = new KaPageSections($ka_pages,$ka_section);
+
+
 	karla_add_custom_post_type();
 	
 flush_rewrite_rules();
@@ -59,7 +66,9 @@ function karla_add_custom_post_type(){
 	register_post_type( 'section', array( 'public' => 'true' , 'labels' => $labels ) );
 }
 function karla_section_pages(){
-	ka_print_pages_checkboxes();
+    global $post;
+    global $ka_pages;
+	ka_print_pages_checkboxes($post->ID,$ka_pages->getPages());
 }
 function theme_slug_filter_the_title( $title ) {
      $screen = get_current_screen();
@@ -85,14 +94,14 @@ function array_values_into_int($array){
     return $new_arr;
 }
 function karl_save_postdata( $section_id ) {
-    global $ka_pages;
+    global $ka_page_sections;
 	$section_id = (INT)$section_id;
   	$posted_pages = $_POST['pages-meta-box-sidebar'];
 
 
 
     try {
-        $ka_pages->update_page_section_relationship($posted_pages , $section_id );
+        $ka_page_sections->update_page_sections($posted_pages , $section_id );
     
         
     } catch (Exception $e) {

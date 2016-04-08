@@ -1,11 +1,14 @@
 
 <?php 
+global $ka_page_sections;
 global $ka_section;
 global $ka_pages;
+
 if($_GET['order_by_section'] == null):
 $ka_result_section = $ka_section->getSections();
 else:
-	$ka_result_section = $ka_pages->getSectionsByPagePostname($_GET['order_by_section']);
+
+	$ka_result_section = $ka_page_sections->getSectionsByPagePostname($_GET['order_by_section']);
 
 endif?>
 
@@ -30,7 +33,7 @@ endif?>
 		<tbody>
 			<tr>
 				<?php foreach ($ka_result_section as $section): ?>
-					
+		
 					<tr>
 						<td>
 							<?php ka_print_edit_and_remove_post_link($section)?>
@@ -39,6 +42,7 @@ endif?>
 						<?php if($_GET['order_by_section'] == null): ?>
 
 							<td><?php ka_print_section_pages($section)?></td>
+
 
 						<?else:?>
 
