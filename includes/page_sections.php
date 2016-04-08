@@ -218,7 +218,6 @@ public function update_page_sections($posted_pages , $sectionID){
 		}
 		
 }
-
 private function update_page_sections_relationship($pageID ,$page_sections ){
 	try {
 		if(update_post_meta($pageID , $this->page_section_meta_key,$page_sections) == false ){
@@ -236,8 +235,8 @@ public function getSectionsByPagePostname($post_name){
 	try {
 		$page = $this->pages->find_page_by_post_name($post_name);
 		$section_ids = $this->get_page_section_ids($page->ID);
-
-
+		
+		var_dump($section_ids);
 		$result = array();
 		foreach($section_ids as $id){
 		

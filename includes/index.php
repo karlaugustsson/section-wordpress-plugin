@@ -48,13 +48,31 @@ endif?>
 
 							<td><?php print $ka_pages->get_page_title_by_post_name($_GET['order_by_section']) ?></td>
 						
-						<?php endif?>
-						
+						<?php endif?>		
 					</tr>
 
 			<?php endforeach ?>
 			</tr>
 		</tbody>
-	</table>		
+	</table>
+
+	<?php $args = array(
+		'base'               => '%_%',
+		'format'             => '?paged=%#%',
+		'total'              => 2,
+		'current'            => 0,
+		'show_all'           => false,
+		'end_size'           => 3,
+		'mid_size'           => 1,
+		'prev_next'          => true,
+		'prev_text'          => __('« f;rrdetta'),
+		'next_text'          => __('Nästa »'),
+		'type'               => 'plain',
+		'add_args'           => false,
+		'add_fragment'       => '',
+		'before_page_number' => '',
+		'after_page_number'  => ''
+	); ?>
+	<?php echo paginate_links( $args ); ?>	
 	</div>
 
