@@ -98,10 +98,14 @@ function karl_save_postdata( $section_id ) {
 	$section_id = (INT)$section_id;
   	$posted_pages = $_POST['pages-meta-box-sidebar'];
 
+    if($posted_pages == null){
+        $posted_pages = array();
+    }
+
 
 
     try {
-        $ka_page_sections->update_page_sections($posted_pages , $section_id );
+        $ka_page_sections->update_section_pages($posted_pages , $section_id );
     
         
     } catch (Exception $e) {

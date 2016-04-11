@@ -64,9 +64,8 @@ class Ka_section{
 		$sections = $loop->get_posts();
 
 		$loop->wp_reset_query();
-		var_dump($sections);
 	
-	
+
 		return $sections;
 	}
 public function the_crazy($page_id){
