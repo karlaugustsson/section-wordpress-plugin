@@ -69,7 +69,7 @@ private function get_page_section($pageID){
 
 }
 public function section_has_page($pageID , $sectionID){
-	$section_pages = $this->get_section_page_ids($pageID);
+	$section_pages = $this->get_section_page_ids($sectionID);
 
 	if(is_string($section_pages) && $section_pages == $pageID || is_array($section_pages) && in_array_r($pageID, $section_pages) == true){
 		
@@ -121,20 +121,26 @@ private function calculate_difference($all_pages , $posted_pages){
 	return $all_pages;
 }
 private function prepare_section_page_relationship($pageID , $sectionID){
+	
 	$section_pages = $this->get_section_page_ids($sectionID);
 
 	if($section_pages == null ){
 
-		$section_pages = $pageID;
+		$section_pages = (INT)$pageID;
 		
 
 	}else{
-		
-		$section_pages = array((INT)$section_pages);
-		array_push($section_pages,$pageID);		
+
+		if( count($section_pages) == 1){
+
+			$section_pages[0] = (INT)$section_pages[0];
+
+		}
+
+		array_push($section_pages,(INT)$pageID);	
 	}
 
-	return $page_sections;
+	return $section_pages;
 	
 }
 private function destroy_section_pape_relationship($sectionID){
@@ -195,7 +201,7 @@ public function update_section_pages($posted_pages , $sectionID){
 				if($this->section_has_page( $pageID , $sectionID) == false){
 					
 				$page_sections = $this->prepare_section_page_relationship( $pageID, $sectionID);
-		
+
 				$this->update_section_pages_relationship($sectionID , $page_sections);
 			
 				}
@@ -205,9 +211,9 @@ public function update_section_pages($posted_pages , $sectionID){
 		
 }
 private function update_section_pages_relationship($sectionID ,$section_pages ){
+
 	try {
-		var_dump($sectionID);
-		var_dump($section_pages);
+	
 		if(update_post_meta($sectionID , $this->page_section_meta_key,$section_pages) == false ){
 			throw new Exception("data not saved", 1);
 			
