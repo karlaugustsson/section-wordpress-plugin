@@ -6,6 +6,7 @@ global $ka_pages;
 
 if($_GET['order_by_section'] == null):
 $ka_result_section = $ka_section->getSections();
+
 else:
 
 	$ka_result_section = $ka_page_sections->getSectionsByPagePostname($_GET['order_by_section']);

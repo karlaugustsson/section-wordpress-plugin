@@ -81,6 +81,18 @@ public function get_page_title_by_post_name($post_name){
 	}
 }
 
+public function GETpage($page_id){
+
+	foreach ($this->pages as $page) {
+
+		if($page_id == $page->ID){
+			return $page;
+		}
+	
+	}
+	return false;
+}
+
 
 
 

@@ -24,26 +24,25 @@ private function return_section_pages_format($pages_ids){
 		break;
 	}
 }
-public function getSectionPages($pageID){
+public function getSectionPages($sectionID){
 
-		$sections = $this->section->getSections();
-		$sectionPages = [];
-
-		foreach ($sections as $section) {
-		$section_pages = $this->get_section_page_ids($section->ID);
 		
-		if($page_section != null){
-			
-			foreach( $page_section as $section_id){
-	
-				if($section_id == $sectionID){
+		$sectionPagesIds = $this->get_section_page_ids($sectionID);
+		$sectionPages = array();
+		if(is_string($sectionPagesIds) == true){
+			$sectionPages[] = $this->getPage($sectionPagesIds);
+		}
+		else if (is_array($sectionPagesIds) == true ){
 
-					$sectionPages [] = $page;
-				}
-			}		
+			foreach ($sectionPagesIds as $page_id ) {
+			$sectionPages[] = $this->pages->getPage($page_id);
+
+			}
+
+		}else{
+			return false;
 		}
 
-		}
 		return $sectionPages;
 }
 private function get_section_page_ids($sectionID){
@@ -229,16 +228,10 @@ public function getSectionsByPagePostname($post_name){
 	
 	try {
 		$page = $this->pages->find_page_by_post_name($post_name);
-		$section_ids = $this->get_page_section_ids($page->ID);
-		
 
-		$result = array();
-		foreach($section_ids as $id){
-		
-			$result[] = $this->sections->getSection($id);
-		}
-		
-		return $result;
+		$sections = $this->sections->filter_sections_by_page_id($page->ID);
+	
+		return $sections;
 	} catch (Exception $e) {
 		print $e->getMessage();
 	}

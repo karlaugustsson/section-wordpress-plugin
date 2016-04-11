@@ -18,7 +18,7 @@ class Ka_section{
 
 	}
 	public function getSection($id){
-		var_dump($this->sections);
+	
 		if(!empty($this->sections)){
 			
 			foreach ($this->sections as $section) {
@@ -48,14 +48,7 @@ class Ka_section{
 	}
 	 private function getAllSections(){
 
-		$args = array( 'post_type' => $this->post_type , 'posts_per_page' => 3 , 'paged' => $this->current_page,
-			'meta_query' => array (
-		    array (
-		    'post_id' => '2',
-			  'key' => '_page_section',
-              'compare' => 'IN'
-		    )
-		  ) 		
+		$args = array( 'post_type' => $this->post_type , 'posts_per_page' => 3 , 'paged' => $this->current_page	
 
 	);
 		
@@ -64,12 +57,32 @@ class Ka_section{
 		$sections = $loop->get_posts();
 
 		$loop->wp_reset_query();
-	
 
+	
+	
 		return $sections;
 	}
-public function the_crazy($page_id){
+public function filter_sections_by_page_id($page_id){
 
+		$args = array( 'post_type' => $this->post_type , 'posts_per_page' => 3 , 'paged' => $this->current_page	,
+			   'meta_query' => array(
+        array(
+            'key' => '_section_pages',
+            'value' => $page_id,
+            'compare' => 'LIKE'
+        )
+    )
+
+	);
+		
+		$loop = new WP_Query( $args );
+		
+		$sections = $loop->get_posts();
+
+	
+		$loop->wp_reset_query();
+
+		return $sections;
 }
 
 
