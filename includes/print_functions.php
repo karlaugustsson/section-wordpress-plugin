@@ -8,7 +8,7 @@ function print_add_new_post_button(){?>
     <?php endif;?>
 <?php }
 function karla_print_index_page(){
-include_once( plugin_dir_path( __FILE__ ) . '/index.php' );
+//include_once( plugin_dir_path( __FILE__ ) . '/index.php' );
 	
 }
 function ka_print_section_pages($section){

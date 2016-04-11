@@ -23,11 +23,11 @@ endif?>
 	<table class="wp-list-table widefat fixed striped posts">
 		<thead>
 			<tr>
-				<td>Name of section</td>
+				<th>Name of section</th>
 				<?php if($_GET['order_by_section'] == null): ?>
-				<td>Visible on</td>
+				<th>Visible on</th>
 				<?php else:?>
-				<td>Result for page:</td>
+				<th>Result for page:</th>
 				<?php endif?>
 			</tr>
 		</thead>

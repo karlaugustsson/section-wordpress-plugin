@@ -7,12 +7,64 @@ Version:     1.5
 Author:      Karl Augustsson
 Author URI:  
 License:     GPL2 
+
+// https://codex.wordpress.org/Plugin_API/Filter_Reference/manage_$post_type_posts_columns
 */
 
 
 
 add_action("init" , "karla_install");
 add_action("admin_menu" , 'karla_add_menu_to_admin_menu');
+add_filter("manage_section_posts_columns" , "add_section_columns");
+add_action( 'manage_section_posts_custom_column', 'set_custom_edit_section_columns', 10, 2  );
+add_action( 'pre_get_posts', 'add_my_post_types_to_query' );
+
+function set_custom_edit_section_columns($column , $post_id){
+global $ka_page_sections;
+switch($column){
+    case "pages":
+    $pages = $ka_page_sections->getSectionPages($post_id);
+    if(!empty($pages)){
+    foreach ($pages as $page) {?>
+        <a href="<?php print home_url();?>/wp-admin/edit.php??post_type=section&section_pages=<?php print $page->ID?>"><?php print $page->post_title;?></a>
+    <?php };         
+    }else{
+        print "<p>No pages associated with this section</p>";
+    }
+
+    break;
+}
+}
+function add_my_post_types_to_query( $query ) {
+
+    if(!empty($_GET['section_pages'])){
+    
+        $meta_query = array(
+            array(
+                'key' => '_section_pages',
+                'value' => (INT)$_GET['section_pages'],
+                'compare' => 'LIKE'
+            )
+            
+        ); 
+
+        $query->set('meta_query',$meta_query);  
+         
+    }
+
+    if ( is_home() && $query->is_main_query() )
+        $query->set( 'post_type', array( 'post', 'pages', 'section' ) );
+
+return $query;    
+}
+function add_section_columns($columns){
+
+    unset($columns['date']);
+    return array_merge($columns, 
+              array('pages' => __('Pages')));
+}
+
+
 
     $ka_pages;
     $ka_section;
@@ -36,12 +88,14 @@ global $ka_page_sections;
 
     
 }
+
+
 function karla_add_menu_to_admin_menu(){
 
     global $hook;
     $pg_title = 'my_section_plugin';
-    $menu_title = 'My Section plugin';
-    $cap = 'manage_options';
+    $menu_title = 'My Sections';
+    $cap = 'read';
     $slug = 'my_section_plugin';
     $function = 'karla_print_index_page';
 
@@ -100,7 +154,15 @@ function karla_add_custom_post_type(){
 		'not_found_in_trash' => __( 'No Sections found in Trash.', 'your-plugin-textdomain' )
 	);
 
-	register_post_type( 'section', array( 'public' => 'true' , 'labels' => $labels ) );
+	register_post_type( 'section',
+     array( 'public' => 'true' , 'labels' => $labels  
+        
+    ,
+    'public' => true,
+    'menu_position' => 15,
+     'supports' => array( 'title', 'editor', 'thumbnail', 'custom-fields' ))
+
+     );
 }
 function karla_section_pages(){
     global $post;
