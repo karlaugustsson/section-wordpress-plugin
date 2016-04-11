@@ -10,7 +10,19 @@ class Ka_section{
 	private $number_per_page;
 
 	public function __construct(){
-	$this->number_per_page = 2;
+
+	$user = get_current_user_id();
+
+	$option = get_option('per_page', 'cmi_ka_sections_per_page');
+	$per_page = get_user_meta($user, $option, true);
+	if ( empty ( $per_page ) || $per_page < 1 ) {
+ 
+    $per_page = get_option( 'per_page', 'default' );
+ 
+	}
+
+
+	$this->number_per_page = (INT)$per_page;
 
 
 	$this->current_page = ((INT)$_GET['paged'] != null ) ? $_GET['paged'] : $this->current_page;
@@ -82,7 +94,7 @@ private function section_query($args){
 
 	$this->total_pages = $loop->max_num_pages;
 		
-	$loop->wp_reset_query();
+
 
 	return $sections;
 }

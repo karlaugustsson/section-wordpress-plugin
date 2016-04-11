@@ -27,27 +27,64 @@ include_once( plugin_dir_path( __FILE__ ) . 'includes/print_functions.php' );
 global $ka_section;
 global $ka_pages;
 global $ka_page_sections;
-
     $ka_section = new Ka_section();
     $ka_pages = new Ka_page();
     $ka_page_sections = new KaPageSections($ka_pages,$ka_section);
 
 
 	karla_add_custom_post_type();
-	
-flush_rewrite_rules();
+
     
 }
 function karla_add_menu_to_admin_menu(){
 
-	add_menu_page('my_section_plugin', 'My Section plugin', 'manage_options', 'my_section_plugin', 'karla_print_index_page');
-	 
-	add_submenu_page('my_section_plugin', "add/edit sections", "Add sections", "manage_options", "my_section_plugin", "karla_print_index_page");
+    global $hook;
+    $pg_title = 'my_section_plugin';
+    $menu_title = 'My Section plugin';
+    $cap = 'manage_options';
+    $slug = 'my_section_plugin';
+    $function = 'karla_print_index_page';
+
+	$hook = add_menu_page( $pg_title, $menu_title, $cap, $slug, $function );
+     
+    add_action( "load-$hook", 'cmi_add_option' );
+    
+    add_submenu_page('my_section_plugin', "add/edit sections", "Add sections", "manage_options", "my_section_plugin", "karla_print_index_page");
 
 	add_meta_box("page_select" , "Section pages" , "karla_section_pages" , "section" ,"side", "low");
 
+
+   
+
+    //$screen = get_current_screen();
+    //var_dump($screen);
+
 }
 
+add_filter('set-screen-option', 'cmi_set_option', 10, 3);
+    
+    function cmi_set_option($status, $option, $value) {
+
+
+    if ( 'cmi_ka_sections_per_page' == $option ) return $value;
+   
+    return $status;
+
+ 
+}
+    function cmi_add_option() {
+ 
+        $option = 'per_page';
+         
+        $args = array(
+            'label' => 'show this many Sections',
+            'default' => 10,
+            'option' => 'cmi_ka_sections_per_page'
+        );
+ 
+        add_screen_option( $option, $args );
+ 
+}
 function karla_add_custom_post_type(){
 	$labels = array(
 
@@ -114,10 +151,9 @@ function karl_save_postdata( $section_id ) {
     
 
 }
-
 function in_array_r($needle, $haystack, $strict = false) {
    if(is_array($haystack) == false){
-    var_dump($haystack);
+
     return;
    }
     foreach ($haystack as $item) {
