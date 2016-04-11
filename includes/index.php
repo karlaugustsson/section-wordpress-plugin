@@ -33,34 +33,43 @@ endif?>
 		</thead>
 		<tbody>
 			<tr>
+			
 				<?php foreach ($ka_result_section as $section): ?>
 		
 					<tr>
+						<?php try {?>
 						<td>
 							<?php ka_print_edit_and_remove_post_link($section)?>
 							
 						</td>
+							
+			
+
 						<?php if($_GET['order_by_section'] == null): ?>
 
 							<td><?php ka_print_section_pages($section)?></td>
 
 
-						<?else:?>
+						<?php else:?>
 
 							<td><?php print $ka_pages->get_page_title_by_post_name($_GET['order_by_section']) ?></td>
 						
-						<?php endif?>		
+						<?php endif?>
+
+						<?php } catch (Exception $e) {?>
+								<p><?php print $e->getMessage();?></p>
+						<?php ;} ?>		
 					</tr>
 
 			<?php endforeach ?>
 			</tr>
 		</tbody>
 	</table>
-
+	
 	<?php $args = array(
 		'base'               => '%_%',
 		'format'             => '?paged=%#%',
-		'total'              => 2,
+		'total'              => $ka_section->total_pages(),
 		'current'            => 0,
 		'show_all'           => false,
 		'end_size'           => 3,

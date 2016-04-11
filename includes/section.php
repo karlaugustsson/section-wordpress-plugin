@@ -6,13 +6,15 @@ class Ka_section{
  	private $post_type  = "section";
 	private $page_section_meta_key = "_page_section";
 	private $current_page = 1;
+	private $total_pages;
+	private $number_per_page;
 
 	public function __construct(){
-	$number_per_page = 2;
-	if($_GET['paged'] != null){
+	$this->number_per_page = 2;
 
-		$this->current_page = (INT)$_GET['paged'];
-	}
+
+	$this->current_page = ((INT)$_GET['paged'] != null ) ? $_GET['paged'] : $this->current_page;
+	
 	$this->sections = $this->getAllSections() ;
 
 
@@ -42,29 +44,24 @@ class Ka_section{
 		}
 
 	}
-
+	public function total_pages(){
+		//var_dump($this->sections);
+		return $this->total_pages;
+	}
 	public function getSections(){
 		return $this->sections;
 	}
 	 private function getAllSections(){
 
-		$args = array( 'post_type' => $this->post_type , 'posts_per_page' => 3 , 'paged' => $this->current_page	
+		$args = array( 'post_type' => $this->post_type , 'posts_per_page' => $this->number_per_page , 'paged' => $this->current_page	
 
 	);
-		
-		$loop = new WP_Query( $args );
-		
-		$sections = $loop->get_posts();
-
-		$loop->wp_reset_query();
-
 	
-	
-		return $sections;
+		return $this->section_query($args);
 	}
 public function filter_sections_by_page_id($page_id){
 
-		$args = array( 'post_type' => $this->post_type , 'posts_per_page' => 3 , 'paged' => $this->current_page	,
+		$args = array( 'post_type' => $this->post_type , 'posts_per_page' => $this->number_per_page , 'paged' => $this->current_page	,
 			   'meta_query' => array(
         array(
             'key' => '_section_pages',
@@ -74,15 +71,20 @@ public function filter_sections_by_page_id($page_id){
     )
 
 	);
-		
-		$loop = new WP_Query( $args );
-		
-		$sections = $loop->get_posts();
 
-	
-		$loop->wp_reset_query();
+	return $this->section_query($args);
+}
+private function section_query($args){
 
-		return $sections;
+	$loop = new WP_Query( $args );
+		
+	$sections = $loop->get_posts();
+
+	$this->total_pages = $loop->max_num_pages;
+		
+	$loop->wp_reset_query();
+
+	return $sections;
 }
 
 
