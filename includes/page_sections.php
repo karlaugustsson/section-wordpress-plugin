@@ -48,14 +48,14 @@ public function getSectionPages($sectionID){
 private function get_section_page_ids($sectionID){
 
 		$page_ids = get_post_meta($sectionID , $this->page_section_meta_key);
-		
+		var_dump(get_post_meta($sectionID , $this->page_section_meta_key));
 		return $this->return_section_pages_format($page_ids);
 }
-private function get_page_section($pageID){
+public function get_page_section($pageID){
+		var_dump($pageID);
+		$section_ids = $this->get_section_page_ids($pageID);
 
-		$section_ids = $this->get_page_section_ids($pageID);
-
-		$section_ids = $this->return_page_sections_format($section_ids);
+		$section_ids = $this->return_section_pages_format($section_ids);
 	
 		if(is_array($section_ids)){
 
@@ -64,6 +64,8 @@ private function get_page_section($pageID){
 				$result[] = $this->sections->getSection($sectionID);
 				}
 			return $result;
+		}else{
+			return false;
 		}
 
 }

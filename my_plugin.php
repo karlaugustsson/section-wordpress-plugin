@@ -18,6 +18,11 @@ add_action("admin_menu" , 'karla_add_menu_to_admin_menu');
 add_filter("manage_section_posts_columns" , "add_section_columns");
 add_action( 'pre_get_posts', 'add_my_post_types_to_query' );
 add_action( 'manage_section_posts_custom_column', 'set_custom_edit_section_columns', 10, 2  );
+add_action( 'admin_enqueue_scripts', 'my_scripts_method' );
+//add_filter( 'enter_title_here', 'theme_slug_filter_the_title' );
+add_action( 'save_post', 'karl_save_postdata' );
+add_action( 'wp_ajax_find_sections', 'find_sections' );
+
 
 function set_custom_edit_section_columns($column , $post_id){
 global $ka_page_sections;
@@ -29,7 +34,16 @@ global $ka_page_sections;
         
            
             <a href="<?php print home_url();?>/wp-admin/edit.php?s&post_type=section&section_page=<?php print $page->post_name?>
-            "><?php print $page->post_title;?></a>
+            ">
+            <?php if($_GET['section_page']):?>
+                <?php if ( $_GET['section_page'] == $page->post_name ):?>
+
+                    <?php print $page->post_title?>
+                <?php endif?>
+            <?php else:?>
+            <?php print $page->post_title;?></a>
+            <?php endif?>  
+            
         <?php };         
         }else{
             print "<p>No pages associated with this section</p>";
@@ -40,6 +54,7 @@ global $ka_page_sections;
 }
 
 function add_my_post_types_to_query( $query ) {
+
 global $ka_pages;
 if ( $query->is_main_query() ) {
     
@@ -55,7 +70,6 @@ if ( $query->is_main_query() ) {
     )
     );
    
-        
         $query->set('post_type' , 'section' , 'orderby' ,'meta_value');
         
         $query->set('meta_query',$meta_query); 
@@ -80,9 +94,6 @@ function add_section_columns($columns){
     return array_merge($columns, 
               array('pages' => __('Pages')));
 }
-
-
-
     $ka_pages;
     $ka_section;
     $ka_page_sections;
@@ -114,22 +125,9 @@ function karla_add_menu_to_admin_menu(){
     $menu_title = 'Sections';
     $cap = 'read';
     $slug = 'my_sections';
-    $function = 'karla_print_index_page';
-
-	
-   // add_posts_page( $pg_title, $menu_title, $cap, $slug, $function );
-     
- 
-    
-    //add_submenu_page('my_section_n', "add/edit sections", "Add sections", "manage_options", "my_section_plugin", "karla_print_index_page");
-
+    $function = 'karla_print_order_sections_page';
+    add_menu_page("Order sections" , "sectionPlugin" , $cap , "order_sections"  , $function );
 	add_meta_box("page_select" , "Section pages" , "karla_section_pages" , "section" ,"side", "low");
-
-
-   
-
-    //$screen = get_current_screen();
-    //var_dump($screen);
 
 
 }
@@ -177,9 +175,7 @@ function theme_slug_filter_the_title( $title ) {
 
 }
 
-add_filter( 'enter_title_here', 'theme_slug_filter_the_title' );
 
-add_action( 'save_post', 'karl_save_postdata' );
 
 function array_values_into_int($array){
     $new_arr = array();
@@ -222,5 +218,31 @@ function in_array_r($needle, $haystack, $strict = false) {
 
     return false;
 }
+function my_scripts_method($hook){
 
- ?>
+    if( 'toplevel_page_order_sections' != $hook ) {
+   
+    return;
+    }
+    
+    wp_enqueue_script( 'order_sections' , plugins_url( "/js/order_sections.js" , __FILE__ ) , array("jquery"));
+  
+   // wp_localize_script( 'ajax-script', 'ajax_object',
+           // array( 'ajax_url' => admin_url( 'admin-ajax.php' ), 'we_value' => 1234 ) );
+}
+function karla_print_order_sections_page(){
+
+    include_once( plugin_dir_path( __FILE__ ) . "/includes/order_sections.php");
+
+}
+
+function find_sections() {
+    global $ka_page_sections ; 
+
+    global $wpdb; // this is how you get access to the database
+    $sections = $ka_page_sections->get_page_section((INT)$_POST['pageID']);
+
+    var_dump($sections);
+
+    wp_die(); // this is required to terminate immediately and return a proper response
+}

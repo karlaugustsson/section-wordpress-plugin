@@ -47,7 +47,7 @@ endif?>
 
 						<?php if($_GET['order_by_section'] == null): ?>
 
-							<td><?php ka_print_section_pages($section)?></td>
+							<td><?php ka_print_sction_pages($section)?>e</td>
 
 
 						<?php else:?>

@@ -10,23 +10,7 @@ class Ka_section{
 	private $number_per_page;
 
 	public function __construct(){
-
-	$user = get_current_user_id();
-
-	$option = get_option('per_page', 'cmi_ka_sections_per_page');
-	$per_page = get_user_meta($user, $option, true);
-	if ( empty ( $per_page ) || $per_page < 1 ) {
- 
-    $per_page = get_option( 'per_page', 'default' );
- 
-	}
-
-
-	$this->number_per_page = (INT)$per_page;
-
-
-	$this->current_page = ((INT)$_GET['paged'] != null ) ? $_GET['paged'] : $this->current_page;
-	
+		
 	$this->sections = $this->getAllSections() ;
 
 
@@ -73,7 +57,7 @@ class Ka_section{
 	}
 public function filter_sections_by_page_id($page_id){
 
-		$args = array( 'post_type' => $this->post_type , 'posts_per_page' => $this->number_per_page , 'paged' => $this->current_page	,
+		$args = array( 'post_type' => $this->post_type,
 			   'meta_query' => array(
         array(
             'key' => '_section_pages',
