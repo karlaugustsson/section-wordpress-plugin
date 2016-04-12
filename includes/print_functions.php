@@ -22,8 +22,8 @@ function ka_print_section_pages($section){
         if($section_pages != false){
             
             foreach($section_pages as $page){?>
-     
-           <a href="<?php print admin_url( 'admin.php?page=my_section_plugin&order_by_section='.$page->post_name )?>"><?php print $page->post_title ?></a>
+            <?php var_dump($page)?>
+           <a href="<?php print admin_url( 'admin.php?page=my_section_plugin&order_by_section='.$page->post_name )?>"></a>
            <?php }
         }else{
             print "<p>No pages associated with this section</p>";

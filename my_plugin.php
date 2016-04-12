@@ -16,50 +16,67 @@ License:     GPL2
 add_action("init" , "karla_install");
 add_action("admin_menu" , 'karla_add_menu_to_admin_menu');
 add_filter("manage_section_posts_columns" , "add_section_columns");
-add_action( 'manage_section_posts_custom_column', 'set_custom_edit_section_columns', 10, 2  );
 add_action( 'pre_get_posts', 'add_my_post_types_to_query' );
+add_action( 'manage_section_posts_custom_column', 'set_custom_edit_section_columns', 10, 2  );
 
 function set_custom_edit_section_columns($column , $post_id){
 global $ka_page_sections;
-switch($column){
-    case "pages":
-    $pages = $ka_page_sections->getSectionPages($post_id);
-    if(!empty($pages)){
-    foreach ($pages as $page) {?>
-        <a href="<?php print home_url();?>/wp-admin/edit.php??post_type=section&section_pages=<?php print $page->ID?>"><?php print $page->post_title;?></a>
-    <?php };         
-    }else{
-        print "<p>No pages associated with this section</p>";
-    }
+    switch($column){
+        case "pages":
+        $pages = $ka_page_sections->getSectionPages($post_id);
+        if(!empty($pages)){
+        foreach ($pages as $page) {?>
+        
+           
+            <a href="<?php print home_url();?>/wp-admin/edit.php?s&post_type=section&section_page=<?php print $page->post_name?>
+            "><?php print $page->post_title;?></a>
+        <?php };         
+        }else{
+            print "<p>No pages associated with this section</p>";
+        }
 
-    break;
+        break;
+    }
 }
-}
+
 function add_my_post_types_to_query( $query ) {
-
-    if(!empty($_GET['section_pages'])){
+global $ka_pages;
+if ( $query->is_main_query() ) {
     
-        $meta_query = array(
-            array(
-                'key' => '_section_pages',
-                'value' => (INT)$_GET['section_pages'],
-                'compare' => 'LIKE'
-            )
-            
-        ); 
+    if(!empty($_GET['section_page'])){
+        $page_id = $ka_pages->find_page_by_post_name($_GET['section_page'])->ID  ;  
 
-        $query->set('meta_query',$meta_query);  
-         
+    $meta_query = array(
+    'relation' => 'OR', // Optional, defaults to "AND"
+    array(
+        'key'     => '_section_pages',
+        'value'   => $page_id,
+        'compare' => 'LIKE'
+    )
+    );
+   
+        
+        $query->set('post_type' , 'section' , 'orderby' ,'meta_value');
+        
+        $query->set('meta_query',$meta_query); 
+    
+        if($query->is_home()){
+
+            $query->set( 'post_type', array( 'post', 'pages', 'section') );             
+
+        }
+        
     }
 
-    if ( is_home() && $query->is_main_query() )
-        $query->set( 'post_type', array( 'post', 'pages', 'section' ) );
+}
+
 
 return $query;    
 }
 function add_section_columns($columns){
 
     unset($columns['date']);
+    unset($columns['author']);
     return array_merge($columns, 
               array('pages' => __('Pages')));
 }
@@ -93,17 +110,18 @@ global $ka_page_sections;
 function karla_add_menu_to_admin_menu(){
 
     global $hook;
-    $pg_title = 'my_section_plugin';
-    $menu_title = 'My Sections';
+    $pg_title = 'Sections';
+    $menu_title = 'Sections';
     $cap = 'read';
-    $slug = 'my_section_plugin';
+    $slug = 'my_sections';
     $function = 'karla_print_index_page';
 
-	$hook = add_menu_page( $pg_title, $menu_title, $cap, $slug, $function );
+	
+   // add_posts_page( $pg_title, $menu_title, $cap, $slug, $function );
      
-    add_action( "load-$hook", 'cmi_add_option' );
+ 
     
-    add_submenu_page('my_section_plugin', "add/edit sections", "Add sections", "manage_options", "my_section_plugin", "karla_print_index_page");
+    //add_submenu_page('my_section_n', "add/edit sections", "Add sections", "manage_options", "my_section_plugin", "karla_print_index_page");
 
 	add_meta_box("page_select" , "Section pages" , "karla_section_pages" , "section" ,"side", "low");
 
@@ -113,36 +131,14 @@ function karla_add_menu_to_admin_menu(){
     //$screen = get_current_screen();
     //var_dump($screen);
 
-}
 
-add_filter('set-screen-option', 'cmi_set_option', 10, 3);
-    
-    function cmi_set_option($status, $option, $value) {
-
-
-    if ( 'cmi_ka_sections_per_page' == $option ) return $value;
-   
-    return $status;
-
- 
-}
-    function cmi_add_option() {
- 
-        $option = 'per_page';
-         
-        $args = array(
-            'label' => 'show this many Sections',
-            'default' => 10,
-            'option' => 'cmi_ka_sections_per_page'
-        );
- 
-        add_screen_option( $option, $args );
- 
 }
 function karla_add_custom_post_type(){
 	$labels = array(
-
-		'add_new'            => _x( 'Add New', 'section', 'your-plugin-textdomain' ),
+        'label'                   =>  "sections",
+        'name' =>   "sections",
+        'name_admin_bar'        => _x( 'Section', 'Add New on Toolbar', 'textdomain' ),
+		'add_new'            => _x( 'Add New section', 'section', 'your-plugin-textdomain' ),
 		'add_new_item'       => __( 'Add New Section', 'your-plugin-textdomain' ),
 		'new_item'           => __( 'New Section', 'your-plugin-textdomain' ),
 		'edit_item'          => __( 'Edit Section', 'your-plugin-textdomain' ),

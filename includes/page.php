@@ -77,8 +77,10 @@ public function get_page_title_by_post_name($post_name){
 	$title = $this->find_page_by_post_name($post_name) ;
 
 	if ( $title != false){
+
 		return $title->post_name;
 	}
+	return false;
 }
 
 public function GETpage($page_id){
