@@ -5,7 +5,7 @@
 <form  action="#">
 
 	<select class="page_select">
-  		<option value="---" class="page_select" selected="selected">----</option>
+  		<option id="ignore_me" value="---" class="page_select" selected="selected">----</option>
   			<?php foreach($pages as $page):?>
   				<option class="page_select" value="<?php print $page->ID?>"><?php print $page->post_title?></option>
   		<?php endforeach?>

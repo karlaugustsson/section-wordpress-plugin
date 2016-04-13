@@ -9,6 +9,7 @@ public function __construct(Ka_page $pages ,Ka_section $sections){
 		$this->pages = $pages;
 }
 private function return_section_pages_format($pages_ids){
+	
 	switch ($pages_ids) {
 		case false:
 			return null;
@@ -45,34 +46,35 @@ public function getSectionPages($sectionID){
 
 		return $sectionPages;
 }
+
 private function get_section_page_ids($sectionID){
 
 		$page_ids = get_post_meta($sectionID , $this->page_section_meta_key);
-		var_dump(get_post_meta($sectionID , $this->page_section_meta_key));
+
 		return $this->return_section_pages_format($page_ids);
 }
-public function get_page_section($pageID){
-		var_dump($pageID);
-		$section_ids = $this->get_section_page_ids($pageID);
-
-		$section_ids = $this->return_section_pages_format($section_ids);
+public function get_page_sections($pageID){
 	
-		if(is_array($section_ids)){
+		$all_sections = $this->sections->getSections();
+		$result = array();
 
-			$result = array();
-			foreach ($section_ids as $sectionID) {
-				$result[] = $this->sections->getSection($sectionID);
-				}
-			return $result;
-		}else{
+		foreach ($all_sections as $section ) {
+			
+			if ( $this->section_has_page($pageID ,$section->ID) === true ){
+				array_push($result, $section);
+			}
+		}
+		if(empty($result) == true){
 			return false;
 		}
+		return $result;
 
 }
 public function section_has_page($pageID , $sectionID){
+	
 	$section_pages = $this->get_section_page_ids($sectionID);
 
-	if(is_string($section_pages) && $section_pages == $pageID || is_array($section_pages) && in_array_r($pageID, $section_pages) == true){
+	if(is_string($section_pages) && $section_pages == $pageID || is_array($section_pages) == true && in_array_r($pageID, $section_pages) == true){
 		
 		return true;
 	}
@@ -81,13 +83,13 @@ public function section_has_page($pageID , $sectionID){
 }
 private function delete_section_page_relationship($pageID , $sectionID){
 
-	$section_pages = $this->get_page_section_ids($pageID);
+	$section_pages = $this->get_section_page_ids($sectionID);
 
 	if(is_string($section_pags) && $section_pages == $pageID){
 
 		$this->destroy_section_page_relationship($sectionID);
 
-	}else if(is_array($section_pages)){
+	}else if(is_array($section_pages) == true){
 
 		$key_to_remove = array_search($pageID, $section_pages);
 		
@@ -95,6 +97,7 @@ private function delete_section_page_relationship($pageID , $sectionID){
 		unset($section_pages[$key_to_remove]);
 
 		if(!empty($section_pages)){
+
 			$section_pages = array_values($section_pages);
 			$this->update_section_pages_relationship($sectionID , $section_pages);
 			if(count($section_pages) == 1 ){
@@ -105,6 +108,8 @@ private function delete_section_page_relationship($pageID , $sectionID){
 		}
 
 	}else{
+			
+		
 		die("check this out you cow i dont know what to do :(");
 	}
 
@@ -183,6 +188,7 @@ public function update_section_pages($posted_pages , $sectionID){
 		$all_pages_id = $this->pages->get_ids_from_pages($this->pages->getPages());
 
 		$remove_pages = $this->calculate_difference($all_pages_id , $page_ids_to_add);
+
 
 		if(!empty($remove_pages)){
 

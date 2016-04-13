@@ -19,11 +19,9 @@ add_filter("manage_section_posts_columns" , "add_section_columns");
 add_action( 'pre_get_posts', 'add_my_post_types_to_query' );
 add_action( 'manage_section_posts_custom_column', 'set_custom_edit_section_columns', 10, 2  );
 add_action( 'admin_enqueue_scripts', 'my_scripts_method' );
-//add_filter( 'enter_title_here', 'theme_slug_filter_the_title' );
-add_action( 'save_post', 'karl_save_postdata' );
-add_action( 'wp_ajax_find_sections', 'find_sections' );
-
-
+add_action( 'save_post', 'karl_save_postdata', 'save_book_meta', 10, 3 );
+add_action( 'wp_ajax_find_page_sections', 'find_page_sections' );
+add_action( 'update_post_section', 'update_section_page_order', 10, 3 );
 function set_custom_edit_section_columns($column , $post_id){
 global $ka_page_sections;
     switch($column){
@@ -98,15 +96,21 @@ function add_section_columns($columns){
     $ka_section;
     $ka_page_sections;
 
+function update_new_section_order(){
+    die();
+}
 function karla_install(){
-
+if(isset($_POST['update_section_page_ids'])){
+   add_action( 'update_post', 'update_section_page_order' );
+}
 include_once( plugin_dir_path( __FILE__ ) . 'includes/page.php' );
 include_once( plugin_dir_path( __FILE__ ) . 'includes/section.php' );
 include_once( plugin_dir_path( __FILE__ ) . 'includes/page_sections.php' );
-include_once( plugin_dir_path( __FILE__ ) . 'includes/print_functions.php' );
+
 global $ka_section;
 global $ka_pages;
 global $ka_page_sections;
+
     $ka_section = new Ka_section();
     $ka_pages = new Ka_page();
     $ka_page_sections = new KaPageSections($ka_pages,$ka_section);
@@ -116,8 +120,6 @@ global $ka_page_sections;
 
     
 }
-
-
 function karla_add_menu_to_admin_menu(){
 
     global $hook;
@@ -184,8 +186,13 @@ function array_values_into_int($array){
     }
     return $new_arr;
 }
-function karl_save_postdata( $section_id ) {
+function karl_save_postdata( $section_id, $post, $update ) {
+
+    if($post->post_type != "section"){
+        return;
+    }
     global $ka_page_sections;
+
 	$section_id = (INT)$section_id;
   	$posted_pages = $_POST['pages-meta-box-sidebar'];
 
@@ -236,13 +243,62 @@ function karla_print_order_sections_page(){
 
 }
 
-function find_sections() {
+function find_page_sections(){
+    
     global $ka_page_sections ; 
+    global $wpdb; // this is how you get access to the database  
+   
+    $page_id = (INT)$_POST['pageID'];
+    
+    if ( $page_id === false || $page_id === 0 ){
+        
+        wp_die(); // this is required to terminate immediately and return a proper response
+        die();
+    }
 
-    global $wpdb; // this is how you get access to the database
-    $sections = $ka_page_sections->get_page_section((INT)$_POST['pageID']);
+     $sections = $ka_page_sections->get_page_sections($page_id);
+    
 
-    var_dump($sections);
+    
+    if(empty($sections) == true || $sections == false){
+        wp_send_json_success( array("message" => "No sections found to order") );
+    
+    }else{
+        ka_print_section_panels($sections , $page_id);
+    }
+
 
     wp_die(); // this is required to terminate immediately and return a proper response
 }
+    function ka_print_section_panels($sections , $page_id){?>
+
+    <form action="post.php" method="options.php">
+        <?php foreach($sections as $section):?>
+
+        <input type="hidden" value="<?php print $page_id ?>" name="page_id">
+            <div class="dragable panel">
+                <input type="hidden" name="update_section_page_ids[]" value="<?php print $section->ID ?>">
+                <span><?php print $section->post_title ?></span>
+            </div>
+        <?php endforeach?>
+        <?php submit_button();?>
+    
+    </form>
+    <?php }
+function ka_print_pages_checkboxes($SectionID , $pages ){
+
+global $ka_page_sections;?>
+
+
+    <label for="my_meta_box_text">This section belongs to:</label>
+    <br>
+    <br>
+
+    <?php foreach($pages as $page):?>
+ 
+    <input type="checkbox" name="pages-meta-box-sidebar[]" value="<?php print $page->ID?>" <?php print $ka_page_sections->section_has_page($page->ID , $SectionID) == true ? 'checked="true"' : "" ?> > <?php print $page->post_title?>
+    <br>
+
+   <?php endforeach;?>
+    <?php 
+}?>
