@@ -100,9 +100,7 @@ function update_new_section_order(){
     die();
 }
 function karla_install(){
-if(isset($_POST['update_section_page_ids'])){
-   add_action( 'update_post', 'update_section_page_order' );
-}
+
 include_once( plugin_dir_path( __FILE__ ) . 'includes/page.php' );
 include_once( plugin_dir_path( __FILE__ ) . 'includes/section.php' );
 include_once( plugin_dir_path( __FILE__ ) . 'includes/page_sections.php' );
