@@ -1,5 +1,4 @@
-<?php 
-
+<?php
 class Ka_section{
 
  	private $sections ;
@@ -7,11 +6,11 @@ class Ka_section{
 	private $page_section_meta_key = "_page_section";
 	private $current_page = 1;
 	private $total_pages;
-	private $number_per_page;
+	public $section_query;
 
-	public function __construct(){
-		
-	$this->sections = $this->getAllSections() ;
+	public function __construct($filtered = null){
+
+	$this->sections = ($filtered != null) ? $this->filter_sections_by_page_id() : $this->getAllSections() ;
 
 
 	}
@@ -49,31 +48,32 @@ class Ka_section{
 	}
 	 private function getAllSections(){
 
-		$args = array( 'post_type' => $this->post_type , 'posts_per_page' => $this->number_per_page , 'paged' => $this->current_page	
+		$args = array( 'post_type' => $this->post_type 	
 
 	);
 	
 		return $this->section_query($args);
 	}
-public function filter_sections_by_page_id($page_id){
+public function filter_sections_by_page_id(){
 
 		$args = array( 'post_type' => $this->post_type,
 			   'meta_query' => array(
         array(
             'key' => '_section_pages',
-            'value' => $page_id,
+            'value' => get_the_ID(),
             'compare' => 'LIKE'
         )
     )
 
 	);
-
+		
 	return $this->section_query($args);
 }
 private function section_query($args){
-
 	$loop = new WP_Query( $args );
-		
+
+	$this->section_query = $loop;
+
 	$sections = $loop->get_posts();
 
 	$this->total_pages = $loop->max_num_pages;
@@ -82,6 +82,5 @@ private function section_query($args){
 
 	return $sections;
 }
-
 
 }

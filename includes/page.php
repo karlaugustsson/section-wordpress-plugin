@@ -1,5 +1,4 @@
-<?php 
-
+<?php
 class Ka_page{
 
 	public $pages , $sections ;
@@ -8,8 +7,8 @@ class Ka_page{
 	public function __construct($args = null){
 	
 	$args[0] = (!empty($args[0])) ? $args[0] : "ASC";
-	$args[1] = (!empty($args[0])) ? $args[1] : 0 ;
-	$args[2] = (!empty($args[0])) ? $args[2] : 0 ;
+	$args[1] = (!empty($args[1])) ? $args[1] : 0 ;
+	$args[2] = (!empty($args[2])) ? $args[2] : 0 ;
 	global $post;
  	$args = array(
 		'sort_order' => $args[0],

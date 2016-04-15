@@ -25,6 +25,9 @@ private function return_section_pages_format($pages_ids){
 		break;
 	}
 }
+public function section_belongs_to_current_page($sectionID , $current_page){
+	return $this->section_has_page($current_page , $sectionID);
+}
 public function getSectionPages($sectionID){
 
 		
