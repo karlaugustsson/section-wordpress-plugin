@@ -153,8 +153,8 @@ global $ka_pages;
 if ( $query->is_main_query() ) {
  
  if(!empty($_GET['section_page'])){
- $page_id = $ka_pages->find_page_by_post_name($_GET['section_page'])->ID ; 
 
+ $page_id = $ka_pages->find_page_by_post_name($_GET['section_page'])->ID ; 
  $meta_query = array(
 
  'relation' => 'OR', // Optional, defaults to "AND"
@@ -166,14 +166,17 @@ if ( $query->is_main_query() ) {
  )
  );
  
+ $test = array( 'post', 'pages', 'section' );
+
  $query->set('post_type' , 'section' , 'orderby' ,'meta_value');
  
  $query->set('meta_query',$meta_query); 
  
 
- $query->set( 'post_type', array( 'post', 'pages', 'section') ); 
- 
- }
+  if ( is_home() )
+    $query->set( 'post_type', array( 'post', 'page', 'section' ) );
+  return $query;
+}
 
 }
 
@@ -254,7 +257,6 @@ function ka_end_section(){
  </div>
 <?php }
 function karl_save_postdata( $section_id, $post, $update ) {
-
 
 if($_SERVER['REQUEST_METHOD'] == "POST"){
 	 $posted_pages = $_POST['pages-meta-box-sidebar'];

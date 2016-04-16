@@ -88,7 +88,7 @@ private function delete_section_page_relationship($pageID , $sectionID){
 
 	$section_pages = $this->get_section_page_ids($sectionID);
 
-	if(is_string($section_pags) && $section_pages == $pageID){
+	if(is_string($section_pages) && $section_pages == $pageID){
 
 		$this->destroy_section_page_relationship($sectionID);
 
@@ -107,7 +107,7 @@ private function delete_section_page_relationship($pageID , $sectionID){
 				array_shift($section_pages);	
 			}
 		}else{
-			$this->delete_section_page_relationship($sectionID);
+			$this->destroy_section_pape_relationship($sectionID);
 		}
 
 	}else{
