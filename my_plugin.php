@@ -255,13 +255,16 @@ function ka_end_section(){
 <?php }
 function karl_save_postdata( $section_id, $post, $update ) {
 
+
+if($_SERVER['REQUEST_METHOD'] == "POST"){
+	 $posted_pages = $_POST['pages-meta-box-sidebar'];
  if($post->post_type != "section"){
  return;
  }
  global $ka_page_sections;
 
 $section_id = (INT)$section_id;
- $posted_pages = $_POST['pages-meta-box-sidebar'];
+
 
  if($posted_pages == null){
  $posted_pages = array();
@@ -277,6 +280,8 @@ $section_id = (INT)$section_id;
  print $e->getMessage();
  }
  
+
+}
 
 }
 function in_array_r($needle, $haystack, $strict = false) {
