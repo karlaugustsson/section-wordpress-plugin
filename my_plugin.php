@@ -114,8 +114,11 @@ global $ka_page_sections;
  $pages = $ka_page_sections->getSectionPages($post_id);
  if(!empty($pages)){
 
- foreach ($pages as $page) {?>
-<a href="<?php print home_url();?>/wp-admin/edit.php?s&post_type=section&section_page=<?php print $page->post_name;?>"><?php print $page->post_title;?></a><?php;}
+ foreach ($pages as $page):?>
+<a href="<?php print home_url();?>/wp-admin/edit.php?s&post_type=section&section_page=<?php print $page->post_name;?>">
+	<?php print $page->post_title;?>
+	</a>
+	<?php endforeach;
 
 }else{
  print "<p>No pages associated with this section</p>";
