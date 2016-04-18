@@ -61,51 +61,54 @@ global $ka_page_sections;
  
 }
 function ka_register_section_settings(){
-global $plugin_setting_page; 
 
-$setting_section_group_name = "section_options";
- 
-$setting_section_name = "color_options" ; 
- 
-settings_fields($setting_section_group_name);
+$setting_page_slug = "admin_settings_page";
+$color_section_name = "color_settings" ; 
 
-$option_name = "pick_color";
- 
-add_settings_section( "color_options", "color options", 'the_hell', $plugin_setting_page ); 
+add_settings_section( $color_section_name , "Color settings" , "print_color_settings_heading" , $setting_page_slug );
 
-add_settings_field( "section_link_color", "section link color", "section_link_color_field", $plugin_setting_page , "color_options" ); 
+add_settings_field("link_color" , "Link color" , "section_link_hover_color_field" , $setting_page_slug  , $color_section_name );
 
-add_settings_field( "section_link_hover", "section link color hover", "section_link_hover_color_field", $plugin_setting_page , "color_options"); 
+add_settings_field("link_color_hover" , "Link color hover" , "section_link_color_field" , $setting_page_slug  , $color_section_name );
 
-add_settings_section( "color_options", "color options", 'the_hell', 'section_option_page' );
-
-register_setting( $plugin_setting_page, $option_name );
-}
-function sanitize_setting_data(){
- 
-}
-
-function the_hell($args){
+register_setting( "color_options" , "color" , "sanitize_hex_color" );
 
 }
-function sanitize_settings_data(){
+
+function sanitize_hex_color( $color ) {
+	$pattern = '|^#([A-Fa-f0-9]{3}){1,2}$|';
+    if ( '' === $color["link_color_hover"] || $color["link_color"] == "")
+        return '';
  
+    // 3 or 6 hex digits, or the empty string.
+    if ( preg_match($pattern, $color["link_color"] ) && preg_match($pattern, $color["link_color_hover"] ) )
+        return $color;
 }
+
+function section_link_color_field($id){
+
+$option = get_option( 'color' )['link_color'] ;
+$val = ( $option != false ) ? $option : '#00660f';
+ echo '<input  type="text" name="color[link_color]" value="'. $val .'" class="color-field">';
+}
+function section_link_hover_color_field(){
+
+$option = get_option( 'color' )['link_color_hover'] ;
+$val = ( $option != false ) ? $option : '#00660f';
+ echo '<input  type="text" name="color[link_color_hover]" value="'.$val .'" class="color-field">';
+}
+
+function print_color_settings_heading($args){?>
+
+<?php;}
+
 function karla_add_menu_to_admin_menu(){
 
  add_meta_box("page_select" , "Section pages" , "karla_section_pages" , "section" ,"side", "low");
 
- add_menu_page("Section options Page" , " Section Settings" , 'administrator' , __FILE__ , 
+ add_menu_page("Section options Page" , " Section Settings" , 'administrator' , "admin_settings_page" , 
  "section_option_page");
-}
 
-function section_link_color_field(){
-$val = ( get_option( 'section_link_color' ) != false ) ? get_option( 'section_link_color' ) : '#03ef00';
- echo '<input type="text" name="pick_color["section_link_color"]" value="'. $val .'" class="color-field">';
-}
-function section_link_hover_color_field(){
-$val = ( get_option( 'section_link_hover_color' ) != false ) ? get_option( 'section_link_hover_color' ) : '#00660f';
- echo '<input type="text" name="pick_color["section_link_hover_color"]" value="'.$val .'" class="color-field">';
 }
 function set_custom_edit_section_columns($column , $post_id){
 global $ka_page_sections;
@@ -369,6 +372,7 @@ function ka_get_section_links(){
 
 
 function section_option_page(){
+
  global $plugin_setting_page ;
 
  include( $plugin_setting_page );
