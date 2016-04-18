@@ -24,7 +24,7 @@ if ( is_admin() ){ // admin actions
 } else {
 
  add_action( 'wp', 'get_sections_by_page' );
-
+ add_action("wp_head", "ka_print_style");
  add_action( 'wp_enqueue_scripts', 'ka_front_scripts_method' ); 
 
 }
@@ -76,6 +76,7 @@ register_setting( "color_options" , "color" , "sanitize_hex_color" );
 }
 
 function sanitize_hex_color( $color ) {
+
 	$pattern = '|^#([A-Fa-f0-9]{3}){1,2}$|';
     if ( '' === $color["link_color_hover"] || $color["link_color"] == "")
         return '';
@@ -84,7 +85,9 @@ function sanitize_hex_color( $color ) {
     if ( preg_match($pattern, $color["link_color"] ) && preg_match($pattern, $color["link_color_hover"] ) )
         return $color;
 }
-
+function return_option($option_name , $index){
+	return get_option( $option_name )[$index];
+}
 function section_link_color_field($id){
 
 $option = get_option( 'color' )['link_color'] ;
@@ -302,18 +305,7 @@ function in_array_r($needle, $haystack, $strict = false) {
 
  return false;
 }
-function my_scripts_method($hook){
 
- if( 'toplevel_page_order_sections' != $hook ) {
- 
- return;
- }
- 
- wp_enqueue_script( 'order_sections' , plugins_url( "/js/order_sections.js" , __FILE__ ) , array("jquery"));
- 
- // wp_localize_script( 'ajax-script', 'ajax_object',
- // array( 'ajax_url' => admin_url( 'admin-ajax.php' ), 'we_value' => 1234 ) );
-}
 
 
 function find_page_sections(){
@@ -379,6 +371,16 @@ function section_option_page(){
 
 }
 
+function ka_print_style(){?>
+    <style>
+     .ka_section_link{
+    	color:<?php print get_option( 'color' )['link_color']?>;
+    }
+     .ka_section_link:hover{
+    	color:<?php print get_option( 'color' )['link_color_hover']?>;
+    }
+    </style>
+<?}
 function get_them_admin_scripts(){
 
  if ( is_admin() ){
@@ -390,8 +392,12 @@ function get_them_admin_scripts(){
 }
 
 function ka_front_scripts_method(){
- 
+
  wp_enqueue_script( 'main_section_script' , plugins_url( "/js/main_section_script.js" , __FILE__ ) , array("jquery"));
+}
+function ka_front_style_method(){
+
+
 }
 function ka_print_pages_checkboxes($SectionID , $pages ){
 

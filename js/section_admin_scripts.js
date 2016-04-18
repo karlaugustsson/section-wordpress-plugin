@@ -5,5 +5,6 @@
     	
         $('.color-field').wpColorPicker();
     });
+
      
 })( jQuery );
