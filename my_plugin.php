@@ -177,25 +177,7 @@ if ( $query->is_main_query() ) {
  
  if(!empty($_GET['section_page'])){
 
- $page_id = $ka_pages->find_page_by_post_name($_GET['section_page'])->ID ; 
- $meta_query = array(
-
- 'relation' => 'OR', // Optional, defaults to "AND"
- 
- array(
- 'key' => '_section_pages',
- 'value' => $page_id,
- 'compare' => 'LIKE'
- )
- );
- 
- $test = array( 'post', 'pages', 'section' );
-
- $query->set('post_type' , 'section' , 'orderby' ,'meta_value');
- 
- $query->set('meta_query',$meta_query); 
- 
-
+    var_dump($wpdb);
   if ( is_home() )
     $query->set( 'post_type', array( 'post', 'page', 'section' ) );
   return $query;
@@ -213,7 +195,6 @@ function add_section_columns($columns){
  return array_merge($columns, 
  array('pages' => __('Pages')));
 }
-
 function karla_add_custom_post_type(){
 $labels = array(
  'label' => "sections",

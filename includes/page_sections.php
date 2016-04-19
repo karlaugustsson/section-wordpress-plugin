@@ -24,14 +24,7 @@ public function update_section_postition($pageID , $section_ids){
 	}
 	//$this->$this->update_section_pages_position($sectionID , $section_pages)
 	return true;
-
-
-
 }
-public function section_belongs_to_current_page($sectionID , $current_page){
-	return $this->section_has_page($current_page , $sectionID);
-}
-
 public function getSectionPages($sectionID){
 
 		$sectionPagesIds = $this->get_section_page_ids($sectionID);
@@ -60,9 +53,18 @@ private function get_section_page_ids($sectionID){
 public function get_page_sections($pageID){
 
 	print "not working get_page_sections";
-die();
+	
+	$all_pages = $this->get_section_pages_relationships();
+	$result = [];
+	foreach($all_pages as $page){
 
+		if($page->page_id == $pageID){
+			$result[] = $page;
+		}
+	}
+	return $result;
 }
+
 public function section_has_page($pageID , $sectionID){
 
 	$result = false;
