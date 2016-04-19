@@ -12,20 +12,24 @@ License: GPL2
 */
 if ( is_admin() ){ // admin actions
 
- 
+ register_activation_hook( __FILE__, 'ka_create_database_tables' );
  add_action( 'admin_init', 'ka_register_section_settings');
  add_action("admin_menu" , 'karla_add_menu_to_admin_menu');
  add_filter("manage_section_posts_columns" , "add_section_columns");
  add_action( 'pre_get_posts', 'add_my_post_types_to_query' );
  add_action( 'manage_section_posts_custom_column', 'set_custom_edit_section_columns', 10, 2 );
- add_action( 'save_post', 'karl_save_postdata', 'save_book_meta', 10, 3 );
+ add_action( 'save_post', 'karl_save_postdata');
  add_action("admin_enqueue_scripts" , "get_them_admin_scripts");
-
+ add_action( 'wp_ajax_find_sections', 'ajax_find_sections' );
+ add_action( 'wp_ajax_update_section_order', 'ka_ajax_update_section_order' );
 } else {
 
  add_action( 'wp', 'get_sections_by_page' );
  add_action("wp_head", "ka_print_style");
  add_action( 'wp_enqueue_scripts', 'ka_front_scripts_method' ); 
+
+
+// javascript ajax shit and stuff jao
 
 }
 
@@ -61,7 +65,7 @@ global $ka_page_sections;
  
 }
 function ka_register_section_settings(){
-
+	
 $setting_page_slug = "admin_settings_page";
 $color_section_name = "color_settings" ; 
 
@@ -71,6 +75,8 @@ add_settings_field("link_color" , "Link color" , "section_link_hover_color_field
 
 add_settings_field("link_color_hover" , "Link color hover" , "section_link_color_field" , $setting_page_slug  , $color_section_name );
 
+add_settings_field("link_color_active" , "Link color active" , "section_link_active_color_field" , $setting_page_slug  , $color_section_name );
+
 register_setting( "color_options" , "color" , "sanitize_hex_color" );
 
 }
@@ -78,11 +84,11 @@ register_setting( "color_options" , "color" , "sanitize_hex_color" );
 function sanitize_hex_color( $color ) {
 
 	$pattern = '|^#([A-Fa-f0-9]{3}){1,2}$|';
-    if ( '' === $color["link_color_hover"] || $color["link_color"] == "")
+    if ( '' === $color["link_color_hover"] || $color["link_color"] == "" || $color["link_color_active"] == "")
         return '';
  
     // 3 or 6 hex digits, or the empty string.
-    if ( preg_match($pattern, $color["link_color"] ) && preg_match($pattern, $color["link_color_hover"] ) )
+    if ( preg_match($pattern, $color["link_color"] ) && preg_match($pattern, $color["link_color_hover"] ) && preg_match($pattern, $color["link_color_active"] ) )
         return $color;
 }
 function return_option($option_name , $index){
@@ -94,11 +100,18 @@ $option = get_option( 'color' )['link_color'] ;
 $val = ( $option != false ) ? $option : '#00660f';
  echo '<input  type="text" name="color[link_color]" value="'. $val .'" class="color-field">';
 }
+
 function section_link_hover_color_field(){
 
 $option = get_option( 'color' )['link_color_hover'] ;
 $val = ( $option != false ) ? $option : '#00660f';
  echo '<input  type="text" name="color[link_color_hover]" value="'.$val .'" class="color-field">';
+}
+function section_link_active_color_field(){
+
+$option = get_option( 'color' )['link_color_active'] ;
+$val = ( $option != false ) ? $option : '#00660f';
+ echo '<input  type="text" name="color[link_color_active]" value="'.$val .'" class="color-field">';
 }
 
 function print_color_settings_heading($args){?>
@@ -112,6 +125,10 @@ function karla_add_menu_to_admin_menu(){
  add_menu_page("Section options Page" , " Section Settings" , 'administrator' , "admin_settings_page" , 
  "section_option_page");
 
+add_submenu_page( 'edit.php?post_type=section', 'Reorder sections', 'Reorder sections', 'edit_posts', basename(__FILE__), 'print_reorder_sections_page' );
+}
+function print_reorder_sections_page(){
+    include( plugin_dir_path( __FILE__ ) . "/includes/order_sections.php");
 }
 function set_custom_edit_section_columns($column , $post_id){
 global $ka_page_sections;
@@ -185,7 +202,6 @@ if ( $query->is_main_query() ) {
 }
 
 }
-
 
 return $query; 
 }
@@ -262,34 +278,43 @@ function ka_end_section(){
 
  </div>
 <?php }
-function karl_save_postdata( $section_id, $post, $update ) {
+function karl_save_postdata( $section_id ) {
 
-if($_SERVER['REQUEST_METHOD'] == "POST"){
-	 $posted_pages = $_POST['pages-meta-box-sidebar'];
- if($post->post_type != "section"){
- return;
- }
- global $ka_page_sections;
+global $ka_page_sections;
+$sections = array( "16" ,"4");
 
-$section_id = (INT)$section_id;
+$pageID = "2";
+
+$saved = $ka_page_sections->update_section_postition($pageID , $sections);
+
+print "data was " . $saved;
+
+// if($_SERVER['REQUEST_METHOD'] == "POST"){
+// 	 $posted_pages = $_POST['pages-meta-box-sidebar'];
+//  if($post->post_type != "section"){
+//  return;
+//  }
+ // global $ka_page_sections;
+
+// $section_id = (INT)$section_id;
 
 
- if($posted_pages == null){
- $posted_pages = array();
- }
+//  if($posted_pages == null){
+//  $posted_pages = array();
+//  }
 
 
 
- try {
- $ka_page_sections->update_section_pages($posted_pages , $section_id );
+//  try {
+//  $ka_page_sections->update_section_pages($posted_pages , $section_id );
  
  
- } catch (Exception $e) {
- print $e->getMessage();
- }
+//  } catch (Exception $e) {
+//  print $e->getMessage();
+//  }
  
 
-}
+// }
 
 }
 function in_array_r($needle, $haystack, $strict = false) {
@@ -306,47 +331,30 @@ function in_array_r($needle, $haystack, $strict = false) {
  return false;
 }
 
-
-
-function find_page_sections(){
- 
- global $ka_page_sections ; 
- // this is how you get access to the database 
- 
- $page_id = (INT)$_POST['pageID'];
- 
- if ( $page_id === false || $page_id === 0 ){
- 
- wp_die(); // this is required to terminate immediately and return a proper response
- die("hahH");
- }
-
- $sections = $ka_page_sections->get_page_sections($page_id);
- 
-
- 
- if(empty($sections) == true || $sections == false){
- wp_send_json_success( array("message" => "No sections found to order") );
- 
- }else{
- ka_print_section_panels($sections , $page_id);
- }
-
-
- wp_die(); // this is required to terminate immediately and return a proper response
-}
  function ka_print_section_panels($sections , $page_id){?>
 
-<form action="post.php" method="options.php">
+    
+
+<form id="ka_section_order_form" action="#" method="POST">
+<input type="hidden" value="<?php print $page_id ?>" name="page_id">
+<ul id="section-list" class="ui-sortable">
 <?php foreach($sections as $section):?>
 
-<input type="hidden" value="<?php print $page_id ?>" name="page_id">
-<div class="dragable panel">
-<input type="hidden" name="update_section_page_ids[]" value="<?php print $section->ID;?>">
-<span><?php print $section->post_title;?></span>
-</div>
+
+<li class="menu-item-handle">
+    <input type="hidden" name="section_page_ids[]" value="<?php print $section->ID;?>">
+    <?php print $section->post_title;?>
+</li>
+
+
 <?php endforeach?>
-<?php submit_button();?></form>
+</ul>
+<?php submit_button();?>
+</form>
+<div id="section_order_message" style="position:relative; width:200px">
+    <div class="spinner"></div>
+</div>
+
 <?php }
 function ka_get_section_links(){
  
@@ -388,6 +396,12 @@ function get_them_admin_scripts(){
  wp_enqueue_style( "wp-color-picker" );
 
  wp_enqueue_script("wp_color_picker" , plugins_url('/js/section_admin_scripts.js' , __FILE__ ) , array("wp-color-picker") , false , true );
+ 
+  wp_enqueue_script("wp_order_sections" , plugins_url('/js/order_sections.js' , __FILE__ ) , array("jquery") , false , true );
+  
+  wp_enqueue_script('jquery-ui-sortable'); //load sortable
+
+  
  }
 }
 
@@ -395,14 +409,71 @@ function ka_front_scripts_method(){
 
  wp_enqueue_script( 'main_section_script' , plugins_url( "/js/main_section_script.js" , __FILE__ ) , array("jquery"));
 }
-function ka_front_style_method(){
-
-
-}
 function ka_print_pages_checkboxes($SectionID , $pages ){
 
 global $ka_page_sections;
 
 include( plugin_dir_path( __FILE__ ) . "/includes/section_pages_meta_box.php");
  
+}
+
+
+function ajax_find_sections(){
+ global $ka_page_sections ; 
+ // this is how you get access to the database 
+ 
+ $page_id = (INT)$_POST['pageID'];
+ 
+ if ( $page_id === false || $page_id === 0 ){
+ 
+ wp_die(); // this is required to terminate immediately and return a proper response
+ die("hahH");
+ }
+
+ $sections = $ka_page_sections->get_page_sections($page_id);
+ 
+
+ 
+ if(empty($sections) == true || $sections == false){
+    wp_send_json_success( array("message" => "No sections found to order") );
+ 
+ }else{
+    ka_print_section_panels($sections , $page_id);
+ }
+
+
+ wp_die(); // this is required to terminate immediately and return a proper response
+}
+function ka_ajax_update_section_order($data){
+    global $ka_section;
+    $pageID = (  !empty( (INT)$_POST['page_id'])) ? $_POST['page_id'] : null ;
+    $section_ids = (  !empty( (INT)$_POST['section_ids'])) ? $_POST['section_ids'] : null ;
+    
+    if($section_ids != null && $pageID != null ){
+
+        $ka_section->update_section_postition($pageID , $section_ids );
+
+       print "<span style=\"color:green\">data saved</span>"; 
+    }
+    var_dump($section_ids);
+    var_dump($pageID);
+    wp_die();
+}
+
+function ka_create_database_tables(){
+	global $wpdb;
+
+	$charset_colate = $wpdb->get_charset_collate();
+	$tablename = "ka_section_pages";
+
+	$sql = "CREATE TABLE $tablename
+	 (id bigint(20) NOT NULL AUTO_INCREMENT,
+	  page_id bigint(20) unsigned,
+	   section_id bigint(20) unsigned,
+	    page_section_position tinyint(3),
+	    PRIMARY KEY  (id) , KEY $table_name (id , section_id , page_id) )
+	    $charset_colate;
+	 ";
+	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+	dbDelta( $sql );
 }

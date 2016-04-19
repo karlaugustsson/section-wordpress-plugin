@@ -25,6 +25,22 @@ private function return_section_pages_format($pages_ids){
 		break;
 	}
 }
+public function update_section_postition($pageID , $section_ids){
+	
+	$pageID = (INT)$pageID;
+	$section_ids = (INT)$section_ids;
+
+	foreach( $section_ids as $ID){
+		if($this->section_has_page($pageID , $ID) == false ){
+			return false;
+		}
+	}
+	//$this->$this->update_section_pages_position($sectionID , $section_pages)
+	return true;
+
+
+
+}
 public function section_belongs_to_current_page($sectionID , $current_page){
 	return $this->section_has_page($current_page , $sectionID);
 }
