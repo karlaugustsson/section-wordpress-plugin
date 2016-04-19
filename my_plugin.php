@@ -58,7 +58,7 @@ global $ka_page_sections;
  $ka_section = new Ka_section();
  $ka_pages = new Ka_page();
  $ka_page_sections = new KaPageSections($ka_pages,$ka_section);
-
+    var_dump($ka_page_sections->get_section_pages_relationships());
 
  karla_add_custom_post_type();
 

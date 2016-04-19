@@ -39,10 +39,7 @@ class Ka_section{
 		}
 
 	}
-	public function total_pages(){
-		//var_dump($this->sections);
-		return $this->total_pages;
-	}
+	
 	public function getSections(){
 		return $this->sections;
 	}
@@ -54,30 +51,13 @@ class Ka_section{
 	
 		return $this->section_query($args);
 	}
-public function filter_sections_by_page_id(){
 
-		$args = array( 'post_type' => $this->post_type,
-			   'meta_query' => array(
-        array(
-            'key' => '_section_pages',
-            'value' => get_the_ID(),
-            'compare' => 'LIKE'
-        )
-    )
-
-	);
-		
-	return $this->section_query($args);
-}
 private function section_query($args){
 	$loop = new WP_Query( $args );
 
 	$this->section_query = $loop;
 
 	$sections = $loop->get_posts();
-
-	$this->total_pages = $loop->max_num_pages;
-		
 
 
 	return $sections;
