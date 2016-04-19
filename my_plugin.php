@@ -13,6 +13,7 @@ License: GPL2
 if ( is_admin() ){ // admin actions
 
  register_activation_hook( __FILE__, 'ka_create_database_tables' );
+ register_uninstall_hook(    __FILE__, 'ka_remove_database_tables' );
  add_action( 'admin_init', 'ka_register_section_settings');
  add_action("admin_menu" , 'karla_add_menu_to_admin_menu');
  add_filter("manage_section_posts_columns" , "add_section_columns");
@@ -476,4 +477,16 @@ function ka_create_database_tables(){
 	 ";
 	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 	dbDelta( $sql );
+}
+
+function ka_remove_database_tables(){
+	global $wpdb;
+	$tablename = "ka_section_pages";
+	if( ! current_user_can("activate_plugins")){
+		return;
+	}
+
+    if ( __FILE__ != WP_UNINSTALL_PLUGIN )
+        return;
+    $wpdb->query("DROP table $tablename");
 }
