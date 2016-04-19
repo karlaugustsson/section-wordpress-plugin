@@ -58,7 +58,6 @@ global $ka_page_sections;
  $ka_section = new Ka_section();
  $ka_pages = new Ka_page();
  $ka_page_sections = new KaPageSections($ka_pages,$ka_section);
-    var_dump($ka_page_sections->get_section_pages_relationships());
 
  karla_add_custom_post_type();
 
@@ -282,40 +281,38 @@ function ka_end_section(){
 function karl_save_postdata( $section_id ) {
 
 global $ka_page_sections;
-$sections = array( "16" ,"4");
+global $post;
+// $sections = array( "16" ,"4");
 
-$pageID = "2";
+// $pageID = "2";
 
-$saved = $ka_page_sections->update_section_postition($pageID , $sections);
+// $saved = $ka_page_sections->update_section_postition($pageID , $sections);
 
-print "data was " . $saved;
+// print "data was " . $saved;
 
-// if($_SERVER['REQUEST_METHOD'] == "POST"){
-// 	 $posted_pages = $_POST['pages-meta-box-sidebar'];
-//  if($post->post_type != "section"){
-//  return;
-//  }
- // global $ka_page_sections;
+if($_SERVER['REQUEST_METHOD'] == "POST"){
 
-// $section_id = (INT)$section_id;
+	 $posted_pages = $_POST['pages-meta-box-sidebar'];
+ if($post->post_type != "section"){
+    return;
+ }
 
-
-//  if($posted_pages == null){
-//  $posted_pages = array();
-//  }
+ if($posted_pages == null){
+ $posted_pages = array();
+ }
 
 
 
-//  try {
-//  $ka_page_sections->update_section_pages($posted_pages , $section_id );
+ try {
+ $ka_page_sections->update_section_pages($posted_pages , $section_id );
  
  
-//  } catch (Exception $e) {
-//  print $e->getMessage();
-//  }
+ } catch (Exception $e) {
+ print $e->getMessage();
+ }
  
 
-// }
+}
 
 }
 function in_array_r($needle, $haystack, $strict = false) {

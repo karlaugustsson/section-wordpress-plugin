@@ -10,7 +10,7 @@ class Ka_section{
 
 	public function __construct($filtered = null){
 
-	$this->sections = ($filtered != null) ? $this->filter_sections_by_page_id() : $this->getAllSections() ;
+	$this->sections = $this->getAllSections() ;
 
 
 	}
@@ -39,7 +39,7 @@ class Ka_section{
 		}
 
 	}
-	
+
 	public function getSections(){
 		return $this->sections;
 	}

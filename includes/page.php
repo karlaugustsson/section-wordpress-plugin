@@ -70,7 +70,16 @@ public function find_page_by_post_name($post_name){
 	}
 	return get_page_by_path( $post_name );
 }
-
+public function page_exist($id){
+	$result = false;
+	foreach($this->pages as $page){
+		
+		if($page->ID == $id){
+			$result = true;
+		}
+	}
+	return $result;
+}
 public function get_page_title_by_post_name($post_name){
 
 	$title = $this->find_page_by_post_name($post_name) ;
@@ -93,11 +102,4 @@ public function GETpage($page_id){
 	}
 	return false;
 }
-
-
-
-
-
-
-
 }

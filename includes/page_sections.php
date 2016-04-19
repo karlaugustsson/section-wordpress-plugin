@@ -11,23 +11,7 @@ public function __construct(Ka_page $pages ,Ka_section $sections){
 		$this->pages = $pages;
 		$this->page_section_relationship_data = $this->set_section_page_relationships();
 }
-private function return_section_pages_format($pages_ids){
-	
-	switch ($pages_ids) {
-		case false:
-			return null;
-		break;
-		case is_array($pages_ids);
-			if(is_array($pages_ids[0]) == true){
-				return $pages_ids[0];
-			}
-			return $pages_ids;
-		break;
-		default:
-			return $this->sections->getSection($pages_ids);
-		break;
-	}
-}
+
 public function update_section_postition($pageID , $section_ids){
 	
 	$pageID = (INT)$pageID;
@@ -47,9 +31,9 @@ public function update_section_postition($pageID , $section_ids){
 public function section_belongs_to_current_page($sectionID , $current_page){
 	return $this->section_has_page($current_page , $sectionID);
 }
+
 public function getSectionPages($sectionID){
 
-		
 		$sectionPagesIds = $this->get_section_page_ids($sectionID);
 		$sectionPages = array();
 		if(is_string($sectionPagesIds) == true){
@@ -76,6 +60,7 @@ private function get_section_page_ids($sectionID){
 		return $this->return_section_pages_format($page_ids);
 }
 public function get_page_sections($pageID){
+
 	print "not working get_page_sections";
 die();
 
@@ -90,78 +75,70 @@ public function section_has_page($pageID , $sectionID){
 			$result = true ; 
 		}
 	}
-
+	
 	return $result ; 
 }
 
-private function destroy_section_pape_relationship($sectionID){
-	print "fix this";
-	die();
-	// try {
-
-	// if(is_int($sectionID) == false || $sectionID == null){
-
-	// 	throw new Exception("unexpected value of the page section untouched", 1);
-		
-	// }
-	// if(delete_post_meta($sectionID , $this->page_section_meta_key ) == true){
-	// 	return true;
-	// }
-	// throw new Exception("this pages sectionrelationship was not deleted:" . $sectionID , 1);
+private function destroy_section_page_relationship($pageID , $sectionID){
 	
-	// } catch (Exception $e) {
-	// 	print $e->getMessage();
-	// 	die();
-	// }
+	global $wpdb;
 
+	try {
 
-	// try {
-	// 	if($section_pages == false || $section_pages == null || is_string($section_pages) == true){
-	// 		throw new Exception("unexpected data null or false was expection string or array for page:" . $pageID);
-	// 	}
-	// 	if(update_post_meta($sectionID , $this->page_section_meta_key , $section_pages) == false)
-	// 		throw new Exception("the data of ".$sectionID. " wasnt updated check this out crazy , check out data:<br>" . var_dump($page_sections) );
-	// } catch (Exception $e) {
-	// 	print $e->getMessage();
-	// 	die();
-	// }
+		
+		$query = "DELETE FROM $this->table_name WHERE page_id = $pageID AND section_id = $sectionID;";
+		
+		if($wpdb->query($query) == false ){
+			
+			throw new Exception("data WAS NOT REMOVED WERE SORRRRRRY ABOUT THIS REALLY SORRY", 1);	
+		}else{
+			
+			$this->page_section_relationship_data = $this->set_section_page_relationships();
+		}
+		
+
+	} catch (Exception $e) {
+		
+		print $e->getMessage();
+		die();
+		
+	}
+
 }
 
-public function update_section_pages($posted_pages , $sectionID){
-
-		$page_ids_to_add = $posted_pages;
-
-		$all_pages_id = $this->pages->get_ids_from_pages($this->pages->getPages());
-
-		$remove_pages = $this->calculate_difference($all_pages_id , $page_ids_to_add);
+public function update_section_pages( $posted_pages , $sectionID ){
 
 
-		if(!empty($remove_pages)){
 
-			foreach($remove_pages as $pageID){
+//remove pages that does not exist from post_data
+$i = 0;
+foreach( $posted_pages as $pageID ):
 
-				if($this->section_has_page($pageID , $sectionID ) == true){
-		
-					$this->delete_section_page_relationship($pageID,$sectionID);
-				}
-			}
-		}
 
-		if(!empty($page_ids_to_add)){
+	if ( !$this->pages->page_exist( $pageID ) ){
+		unset($posted_pages[$i]);
+	}else{
+		$posted_pages[$i] = (INT)$pageID; 
+	}
+	$i++;
+endforeach;
+
+$pages_to_be_removed = $this->get_pages_to_remove($sectionID,$posted_pages);
+
+foreach($posted_pages as $page_id){
+
+	if ( !$this->section_has_page( $page_id , $sectionID ) ){
 	
-			foreach ($page_ids_to_add as $pageID) {
-			
-				if($this->section_has_page( $pageID , $sectionID) == false){
-					
-				$page_sections = $this->prepare_section_page_relationship( $pageID, $sectionID);
+		$this->update_section_page_relationship($sectionID , $page_id);
 
-				$this->update_section_pages_relationship($sectionID , $page_sections);
-			
-				}
-			}		
-		}
+	}
+}
 
-		
+foreach($pages_to_be_removed as $page_id){
+
+	$this->destroy_section_page_relationship($page_id , $sectionID );
+}
+
 }
 
 private function set_section_page_relationships(){
@@ -177,12 +154,19 @@ private function update_section_page_relationship($sectionID ,$pageID ){
 
 	try {
 
-		$postion = get_next_page_section_pos($pageID , $sectionID);
-		var_dump($position);
-		die();
-		if($wpdb->query("insert into $this->table_name() values($page_id,$sectionID,$positon);") == false ){
-			throw new Exception("data not saved", 1);	
+		$position = $this->get_next_page_section_pos($pageID , $sectionID);
+		
+		$query = "INSERT INTO $this->table_name (page_id , section_id , page_section_position) values($pageID,$sectionID,$position);";
+		
+		if($wpdb->query($query) == false ){
+			
+			throw new Exception("data not saved for real", 1);	
+		}else{
+
+			$this->page_section_relationship_data = $this->set_section_page_relationships();
 		}
+		
+
 	} catch (Exception $e) {
 		
 		print $e->getMessage();
@@ -190,9 +174,27 @@ private function update_section_page_relationship($sectionID ,$pageID ){
 		
 	}
 }
-private function get_next_page_section_pos(){
-	return 2;
+private function get_next_page_section_pos($pageid){
+ 
+
+ $highest_position = 0;
+ 
+ foreach($this->page_section_relationship_data as $data){
+
+ 	if($data->page_id == $pageid){
+
+ 	
+ 		if($data->page_section_position > $highest_position){
+ 			$highest_position = $data->page_section_position;
+ 			
+ 		}
+ 	}
+ }
+
+ return $highest_position + 1;
+
 }
+
 public function getSectionsByPagePostname($post_name){
 	
 	try {
@@ -205,6 +207,18 @@ public function getSectionsByPagePostname($post_name){
 		print $e->getMessage();
 	}
 
+}
+
+private function get_pages_to_remove($sectionID , $pages_to_be_added){
+	$pages_to_remove = array();
+	
+	foreach($this->get_section_pages_relationships() as $data){
+	
+		if( !in_array( $data->page_id , $pages_to_be_added ) && $this->section_has_page( $data->page_id , $sectionID) == true){
+			$pages_to_remove[] = $data->page_id;
+		}
+	}
+	return $pages_to_remove;
 }
 
 }
