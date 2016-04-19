@@ -482,11 +482,10 @@ function ka_create_database_tables(){
 function ka_remove_database_tables(){
 	global $wpdb;
 	$tablename = "ka_section_pages";
+
 	if( ! current_user_can("activate_plugins")){
 		return;
 	}
 
-    if ( __FILE__ != WP_UNINSTALL_PLUGIN )
-        return;
-    $wpdb->query("DROP table $tablename");
+    $wpdb->query("DROP table IF EXISTS $tablename");
 }
