@@ -176,8 +176,9 @@ global $ka_pages;
 if ( $query->is_main_query() ) {
  
  if(!empty($_GET['section_page'])){
-
-    var_dump($wpdb);
+    die();
+    $query->set('join' , "INNER JOIN ka_section_pages on wp_posts.ID = ka_section_pages.page_id");
+ 
   if ( is_home() )
     $query->set( 'post_type', array( 'post', 'page', 'section' ) );
   return $query;
