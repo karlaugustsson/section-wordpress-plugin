@@ -36,28 +36,26 @@ public function getSectionPages($sectionID){
 
 		$sectionPagesIds = $this->get_section_page_ids($sectionID);
 		$sectionPages = array();
-		if(is_string($sectionPagesIds) == true){
-			$sectionPages[] = $this->getPage($sectionPagesIds);
-		}
-		else if (is_array($sectionPagesIds) == true ){
 
 			foreach ($sectionPagesIds as $page_id ) {
 			$sectionPages[] = $this->pages->getPage($page_id);
 
 			}
-
-		}else{
-			return false;
-		}
-
+		
 		return $sectionPages;
 }
 
 private function get_section_page_ids($sectionID){
 
-		$page_ids = get_post_meta($sectionID , $this->page_section_meta_key);
+	$all_pages = $this->get_section_pages_relationships();
+	$result = [];
+	foreach($all_pages as $page){
 
-		return $this->return_section_pages_format($page_ids);
+		if($page->section_id == $sectionID){
+			$result[] = $page->page_id;
+		}
+	}
+	return $result;
 }
 public function get_page_sections($pageID){
 

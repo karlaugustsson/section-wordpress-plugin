@@ -354,6 +354,7 @@ function in_array_r($needle, $haystack, $strict = false) {
 </div>
 
 <?php }
+
 function ka_get_section_links(){
  
  global $ka_page_sections;
