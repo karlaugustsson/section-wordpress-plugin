@@ -512,5 +512,7 @@ function ka_delete_options(){
 function ka_delete_custom_post_types(){
     global $wpdb;
     $post_table = $wpdb->prefix . "posts";
+    var_dump($post_table);
+    die();
     $wpdb->query("DELETE FROM $post_table WHERE post_type = section;");
 }
