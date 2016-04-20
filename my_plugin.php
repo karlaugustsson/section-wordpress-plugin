@@ -467,15 +467,9 @@ function ka_ajax_update_section_order($data){
     if($section_ids != null && $pageID != null ){
         
 
-    if($ka_page_sections->attempt_update_page_section_position( $pageID , $section_ids  ) == true ){
+    $ka_page_sections->attempt_update_page_section_position( $pageID , $section_ids  );
 
-       print "<span style=\"color:green\">data saved</span>";  
-    }else{
-        print "<span style=\"color:red\">data not saved :(</span>";
-    }
-            
-        
-
+    print "<span style=\"color:green\">data saved</span>";  
        
     }
 

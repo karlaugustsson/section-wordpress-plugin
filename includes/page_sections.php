@@ -7,7 +7,7 @@ class KaPageSections{
 
 public function __construct(Ka_page $pages ,Ka_section $sections){
 		
-		$this->sections = $sections ; 
+		$this->sections = $sections ;
 		$this->pages = $pages;
 		$this->page_section_relationship_data = $this->set_section_page_relationships();
 }
@@ -22,7 +22,7 @@ public function update_section_postition($pageID , $section_ids){
 			return false;
 		}
 	}
-	//$this->$this->update_section_pages_position($sectionID , $section_pages)
+
 	return true;
 }
 public function getSectionPages($sectionID){
@@ -91,12 +91,16 @@ public function get_page_sections($pageID){
 	$section_ids = $this->get_section_ids_by_page_id($pageID);
 
 	$result = array();
-
+	
 	foreach($section_ids as $section_id){
-
-		$result[] = $this->sections->getSection($section_id);
+		
+		$section = $this->sections->getSection($section_id);
+		
+		if($section != false){
+			$result[] = $section;
+		}
+		
 	}
-
 	return $result;
 }
 
@@ -223,24 +227,17 @@ private function count_page_sections($pageID){
 	return $i;
 }
 function attempt_update_page_section_position($pageID , $section_ids ){
-	
-	if( $this->count_page_sections($pageID) == count($section_ids)){
 
 		$position = 1;
 
 		foreach($section_ids as $section_id){
-		
-			$this->update_section_page_position( (INT)$section_id ,$pageID, $position );
-	         
-	        $position++;
+			
+			if($this->section_has_page($pageID , $section_id) == true){
 
+				$this->update_section_page_position( (INT)$section_id ,$pageID, $position );
+				$position++;
+			}
 	    }
-
-		return true;
-	}
-
-	return false;
-
 }
 private function update_section_page_position($sectionID ,$pageID ,$position = null){
 	

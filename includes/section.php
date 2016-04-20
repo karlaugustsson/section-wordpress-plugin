@@ -8,7 +8,7 @@ class Ka_section{
 	private $total_pages;
 	public $section_query;
 
-	public function __construct($filtered = null){
+	public function __construct(){
 
 	$this->sections = $this->getAllSections() ;
 
@@ -23,29 +23,18 @@ class Ka_section{
 				if($section->ID == $id){
 					return $section;
 				}
-			}
-
-			throw new Exception("no section was found", 1);
-
-		}else{
-
-				$thepost = get_post($id);
-
-				if($thepost == false){
-
-					throw new Exception("no section was found", 1);
-				}
-				return $thepost;
-		}
+			}	
 
 	}
+	return false;
+}
 
 	public function getSections(){
 		return $this->sections;
 	}
 	 private function getAllSections(){
 
-		$args = array( 'post_type' => $this->post_type 	
+		$args = array( 'post_type' => $this->post_type  , 'post_status' => array("publish" , "public")	
 
 	);
 	
@@ -58,7 +47,6 @@ private function section_query($args){
 	$this->section_query = $loop;
 
 	$sections = $loop->get_posts();
-
 
 	return $sections;
 }
