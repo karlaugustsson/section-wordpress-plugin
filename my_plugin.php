@@ -428,6 +428,7 @@ function ajax_find_sections(){
     wp_send_json_success( array("message" => "No sections found to order") );
  
  }else{
+
     ka_print_section_panels($sections , $page_id);
  }
 
@@ -435,18 +436,25 @@ function ajax_find_sections(){
  wp_die(); // this is required to terminate immediately and return a proper response
 }
 function ka_ajax_update_section_order($data){
-    global $ka_section;
+    global $ka_page_sections;
     $pageID = (  !empty( (INT)$_POST['page_id'])) ? $_POST['page_id'] : null ;
     $section_ids = (  !empty( (INT)$_POST['section_ids'])) ? $_POST['section_ids'] : null ;
     
     if($section_ids != null && $pageID != null ){
+        
 
-        $ka_section->update_section_postition($pageID , $section_ids );
+    if($ka_page_sections->attempt_update_page_section_position( $pageID , $section_ids  ) == true ){
 
-       print "<span style=\"color:green\">data saved</span>"; 
+       print "<span style=\"color:green\">data saved</span>";  
+    }else{
+        print "<span style=\"color:red\">data not saved :(</span>";
     }
-    var_dump($section_ids);
-    var_dump($pageID);
+            
+        
+
+       
+    }
+
     wp_die();
 }
 

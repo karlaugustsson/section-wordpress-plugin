@@ -51,17 +51,17 @@ private function get_section_page_ids($sectionID){
 	return $result;
 }
 public function get_page_sections($pageID){
-
-	print "not working get_page_sections";
 	
-	$all_pages = $this->get_section_pages_relationships();
-	$result = [];
-	foreach($all_pages as $page){
+	
+	$section_ids = $this->get_section_ids_by_page_id($pageID);
+	
+	$result = array();
 
-		if($page->page_id == $pageID){
-			$result[] = $page;
-		}
+	foreach($section_ids as $section_id){
+
+		$result[] = $this->sections->getSection($section_id);
 	}
+
 	return $result;
 }
 
@@ -144,7 +144,7 @@ foreach($posted_pages as $page_id){
 
 	if ( !$this->section_has_page( $page_id , $sectionID ) ){
 	
-		$this->update_section_page_relationship($sectionID , $page_id);
+		$this->save_section_page_relationship($sectionID , $page_id);
 
 	}
 }
@@ -158,13 +158,13 @@ foreach($pages_to_be_removed as $page_id){
 
 private function set_section_page_relationships(){
 	global $wpdb;
-	return $wpdb->get_results("SELECT * FROM $this->table_name");
+	return $wpdb->get_results("SELECT * FROM $this->table_name ORDER BY page_section_position ASC");
 }
 
 public function get_section_pages_relationships(){
 	return $this->page_section_relationship_data;
 }
-private function update_section_page_relationship($sectionID ,$pageID ){
+private function save_section_page_relationship($sectionID ,$pageID ){
 	global $wpdb;
 
 	try {
@@ -186,6 +186,68 @@ private function update_section_page_relationship($sectionID ,$pageID ){
 		
 		print $e->getMessage();
 		die();
+		
+	}
+}
+private function count_page_sections($pageID){
+	$relation_data = $this->get_section_pages_relationships();
+	$i = 0;
+	
+	foreach ($relation_data as $data) {
+
+		if($data->page_id == $pageID && $data->section_id != null ){
+			$i++;
+		}
+	}
+	return $i;
+}
+function attempt_update_page_section_position($pageID , $section_ids ){
+	
+	if( $this->count_page_sections($pageID) == count($section_ids)){
+
+		$position = 1;
+
+		foreach($section_ids as $section_id){
+		
+			$this->update_section_page_position( (INT)$section_id ,$pageID, $position );
+	         
+	        $position++;
+
+	    }
+
+		return true;
+	}
+
+	return false;
+
+}
+private function update_section_page_position($sectionID ,$pageID ,$position = null){
+	
+	global $wpdb;
+	$sectionID = (INT)$sectionID;
+	$pageID = (INT)$pageID;
+	try {
+		if($position == null){
+
+			$position = $this->get_next_page_section_pos($pageID , $sectionID);
+		}
+
+		$query = "UPDATE $this->table_name SET page_section_position = $position  WHERE page_id = $pageID AND section_id = $sectionID;";
+		
+		if($wpdb->query($query) == false && $wpdb->last_error  != ""){
+			
+			throw new Exception("something bad happened", 1);
+
+		}else{
+
+			$this->page_section_relationship_data = $this->set_section_page_relationships();
+		}
+		
+
+	} catch (Exception $e) {
+	
+		print $e->getMessage();
+	
 		
 	}
 }
