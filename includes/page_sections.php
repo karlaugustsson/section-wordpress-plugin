@@ -106,6 +106,21 @@ private function destroy_section_page_relationship($pageID , $sectionID){
 
 }
 
+public function get_section_ids_by_page_id($pageID){
+	
+	$we_belong_together = $this->page_section_relationship_data;
+ 	$result = array();
+
+	foreach ($we_belong_together as $carey) {
+		if($carey->page_id == $pageID){
+			$result[] = $carey->section_id;
+
+		}
+	}
+
+	return $result ;
+}
+
 public function update_section_pages( $posted_pages , $sectionID ){
 
 

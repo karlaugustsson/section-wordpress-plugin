@@ -67,8 +67,9 @@ public function find_page_by_post_name($post_name){
 				}
 
 			}
+			return false;
 	}
-	return get_page_by_path( $post_name );
+	
 }
 public function page_exist($id){
 	$result = false;

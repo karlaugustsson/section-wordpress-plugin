@@ -172,12 +172,18 @@ function get_sections_by_page(){
 function add_my_post_types_to_query( $query ) {
 
 global $ka_pages;
+global $ka_pages;
+global $ka_page_sections;
 
 if ( $query->is_main_query() ) {
  
  if(!empty($_GET['section_page'])){
-    die();
-    $query->set('join' , "INNER JOIN ka_section_pages on wp_posts.ID = ka_section_pages.page_id");
+    $page_id = $ka_pages->find_page_by_post_name($_GET['section_page']);
+    if($page_id != false){
+
+      $query->set('post__in', $ka_page_sections->get_section_ids_by_page_id((INT)$page_id->ID));  
+    } 
+    
  
   if ( is_home() )
     $query->set( 'post_type', array( 'post', 'page', 'section' ) );
