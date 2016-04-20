@@ -8,9 +8,9 @@ class Ka_section{
 	private $total_pages;
 	public $section_query;
 
-	public function __construct(){
-
-	$this->sections = $this->getAllSections() ;
+	public function __construct($args = null){
+	$args = (isset($args) == true ) ? $args : array();
+	$this->sections = $this->getAllSections($args) ;
 
 
 	}
@@ -32,10 +32,11 @@ class Ka_section{
 	public function getSections(){
 		return $this->sections;
 	}
-	 private function getAllSections(){
+	 private function getAllSections($extra_args){
+	 	
 
-		$args = array( 'post_type' => $this->post_type  , 'post_status' => array("publish" , "public")	
-
+		$args = array( 'post_type' => $this->post_type  , 'post_status' => array( "publish" , "public" ) 	
+		
 	);
 	
 		return $this->section_query($args);

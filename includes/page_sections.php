@@ -134,6 +134,7 @@ private function destroy_section_page_relationship($pageID , $sectionID){
 public function get_section_ids_by_page_id($pageID){
 	
 	$we_belong_together = $this->page_section_relationship_data;
+	var_dump($we_belong_together);
  	$result = array();
 
 	foreach ($we_belong_together as $carey) {

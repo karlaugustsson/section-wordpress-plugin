@@ -192,9 +192,17 @@ return $ka_section->section_query->the_post();
 }
 function get_sections_by_page(){
 
- global $ka_section;
+global $ka_section;
+global $ka_pages;
+global $ka_page_sections;
 
- $ka_section = new Ka_section("filtered"); 
+ $ka_section = new Ka_section();
+ $ka_pages = new Ka_page();
+
+ $ka_page_sections = new KaPageSections($ka_pages,$ka_section);
+ var_dump($ka_page_sections->get_section_ids_by_page_id(get_the_ID()));
+    die();
+ //$ka_section = new Ka_section( array("post__in" =>  ) )  ); 
  
 }
 function add_my_post_types_to_query( $query ) {
