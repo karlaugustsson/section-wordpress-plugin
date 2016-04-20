@@ -50,11 +50,29 @@ private function get_section_page_ids($sectionID){
 	}
 	return $result;
 }
+public function delete_section_relationships($sectionID){
+ $this->delete_relations_associated_with_section($sectionID);
+}
+private function delete_relations_associated_with_section($sectionID){
+	$sectionID = (INT)$sectionID;
+
+	global $wpdb;
+
+		
+		$query = "DELETE FROM $this->table_name WHERE section_id = $sectionID;";
+		
+		$wpdb->query($query);
+
+			
+		$this->page_section_relationship_data = $this->set_section_page_relationships();
+		
+
+}
 public function get_page_sections($pageID){
 	
-	
+
 	$section_ids = $this->get_section_ids_by_page_id($pageID);
-	
+
 	$result = array();
 
 	foreach($section_ids as $section_id){
@@ -78,31 +96,17 @@ public function section_has_page($pageID , $sectionID){
 	
 	return $result ; 
 }
-
 private function destroy_section_page_relationship($pageID , $sectionID){
 	
 	global $wpdb;
-
-	try {
-
 		
 		$query = "DELETE FROM $this->table_name WHERE page_id = $pageID AND section_id = $sectionID;";
 		
-		if($wpdb->query($query) == false ){
+	$wpdb->query($query);
 			
-			throw new Exception("data WAS NOT REMOVED WERE SORRRRRRY ABOUT THIS REALLY SORRY", 1);	
-		}else{
-			
-			$this->page_section_relationship_data = $this->set_section_page_relationships();
-		}
-		
 
-	} catch (Exception $e) {
-		
-		print $e->getMessage();
-		die();
-		
-	}
+			
+	$this->page_section_relationship_data = $this->set_section_page_relationships();
 
 }
 

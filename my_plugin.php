@@ -20,9 +20,11 @@ if ( is_admin() ){ // admin actions
  add_action( 'pre_get_posts', 'add_my_post_types_to_query' );
  add_action( 'manage_section_posts_custom_column', 'set_custom_edit_section_columns', 10, 2 );
  add_action( 'save_post', 'karl_save_postdata');
+ add_action('delete_post' , "karl_delete_section_page_relation");
  add_action("admin_enqueue_scripts" , "get_them_admin_scripts");
  add_action( 'wp_ajax_find_sections', 'ajax_find_sections' );
  add_action( 'wp_ajax_update_section_order', 'ka_ajax_update_section_order' );
+
 } else {
 
  add_action( 'wp', 'get_sections_by_page' );
@@ -100,7 +102,17 @@ $option = get_option( 'color' )['link_color'] ;
 $val = ( $option != false ) ? $option : '#00660f';
  echo '<input  type="text" name="color[link_color]" value="'. $val .'" class="color-field">';
 }
+function karl_delete_section_page_relation(){
+    global $post;
+    global $ka_page_sections;
 
+    if($post->post_type == "section"){
+        
+        if(current_user_can('delete_post', $post->ID)){
+            $ka_page_sections->delete_section_relationships($post->ID);
+        }
+    }
+}
 function section_link_hover_color_field(){
 
 $option = get_option( 'color' )['link_color_hover'] ;
@@ -417,12 +429,10 @@ function ajax_find_sections(){
  if ( $page_id === false || $page_id === 0 ){
  
  wp_die(); // this is required to terminate immediately and return a proper response
- die("hahH");
+
  }
 
  $sections = $ka_page_sections->get_page_sections($page_id);
- 
-
  
  if(empty($sections) == true || $sections == false){
     wp_send_json_success( array("message" => "No sections found to order") );
