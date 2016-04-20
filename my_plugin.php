@@ -14,6 +14,8 @@ if ( is_admin() ){ // admin actions
 
  register_activation_hook( __FILE__, 'ka_create_database_tables' );
  register_uninstall_hook(    __FILE__, 'ka_remove_database_tables' );
+  register_uninstall_hook(    __FILE__, 'ka_delete_options' );
+  register_uninstall_hook(    __FILE__, 'ka_delete_custom_post_types' );
  add_action( 'admin_init', 'ka_register_section_settings');
  add_action("admin_menu" , 'karla_add_menu_to_admin_menu');
  add_filter("manage_section_posts_columns" , "add_section_columns");
@@ -503,4 +505,12 @@ function ka_remove_database_tables(){
 	}
 
     $wpdb->query("DROP table IF EXISTS $tablename");
+}
+function ka_delete_options(){
+    remove_option("color");
+}
+function ka_delete_custom_post_types(){
+    global $wpdb;
+    $post_table = $wpdb->prefix . "posts"
+    $wpdb->query("DELETE FROM $post_table WHERE post_type = section;");
 }
