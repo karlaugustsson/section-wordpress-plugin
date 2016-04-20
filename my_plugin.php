@@ -194,13 +194,16 @@ if ( $query->is_main_query() ) {
 
 return $query; 
 }
+
 function add_section_columns($columns){
  global $ka_query;
 
  unset($columns['date']);
  unset($columns['author']);
- return array_merge($columns, 
- array('pages' => __('Pages')));
+
+ return array_merge($columns, array('pages' => __('Pages')));
+
+
 }
 function karla_add_custom_post_type(){
 $labels = array(
