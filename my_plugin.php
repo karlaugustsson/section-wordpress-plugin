@@ -20,11 +20,11 @@ if ( is_admin() ){ // admin actions
  add_action( 'pre_get_posts', 'add_my_post_types_to_query' );
  add_action( 'manage_section_posts_custom_column', 'set_custom_edit_section_columns', 10, 2 );
  add_action( 'save_post', 'karl_save_postdata');
- add_action('delete_post' , "karl_delete_section_page_relation");
+ add_action('before_delete_post' , "karl_delete_section_page_relation");
  add_action("admin_enqueue_scripts" , "get_them_admin_scripts");
  add_action( 'wp_ajax_find_sections', 'ajax_find_sections' );
  add_action( 'wp_ajax_update_section_order', 'ka_ajax_update_section_order' );
-
+add_action( 'admin_action_delete', 'testeli' );
 } else {
 
  add_action( 'wp', 'get_sections_by_page' );
@@ -44,6 +44,9 @@ $ka_pages;
 $ka_section;
 $ka_page_sections;
 
+function testeli(){
+    die("aaaa");
+}
 function karla_install(){
 
 include_once( plugin_dir_path( __FILE__ ) . 'includes/page.php' );
@@ -102,16 +105,27 @@ $option = get_option( 'color' )['link_color'] ;
 $val = ( $option != false ) ? $option : '#00660f';
  echo '<input  type="text" name="color[link_color]" value="'. $val .'" class="color-field">';
 }
-function karl_delete_section_page_relation(){
-    global $post;
+function karl_delete_section_page_relation($postID){
+  
+    global $wpdb;
     global $ka_page_sections;
+    global $post_type ; 
 
-    if($post->post_type == "section"){
-        
-        if(current_user_can('delete_post', $post->ID)){
-            $ka_page_sections->delete_section_relationships($post->ID);
+
+        if(current_user_can('delete_post', $postID)){
+            switch ($post_type) {
+                case 'section':
+                $ka_page_sections->delete_section_relationships($postID);
+                break;
+                case 'page':
+                $ka_page_sections->delete_page_relationships($postID);
+                break;
+                
+                default:
+                return;
+                break;
+            }
         }
-    }
 }
 function section_link_hover_color_field(){
 

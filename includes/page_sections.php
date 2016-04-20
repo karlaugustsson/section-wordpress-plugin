@@ -53,6 +53,9 @@ private function get_section_page_ids($sectionID){
 public function delete_section_relationships($sectionID){
  $this->delete_relations_associated_with_section($sectionID);
 }
+public function delete_page_relationships($pageID){
+ $this->delete_relations_associated_with_page($pageID);
+}
 private function delete_relations_associated_with_section($sectionID){
 	$sectionID = (INT)$sectionID;
 
@@ -67,6 +70,20 @@ private function delete_relations_associated_with_section($sectionID){
 		$this->page_section_relationship_data = $this->set_section_page_relationships();
 		
 
+}
+private function delete_relations_associated_with_page($pageID){
+	
+	$pageID = (INT)$pageID;
+
+	global $wpdb;
+
+		
+		$query = "DELETE FROM $this->table_name WHERE page_id = $pageID;";
+		
+		$wpdb->query($query);
+
+			
+		$this->page_section_relationship_data = $this->set_section_page_relationships();
 }
 public function get_page_sections($pageID){
 	
