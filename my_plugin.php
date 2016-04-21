@@ -142,6 +142,16 @@ public static function ka_create_database_tables(){
     dbDelta( $sql );
 }
 
+function ka_delete_options(){
+    remove_option("color");
+}
+function ka_delete_custom_post_types(){
+    global $wpdb;
+    $post_table = $wpdb->prefix . "posts";
+
+    $query = "DELETE FROM $post_table WHERE post_type = 'section';";
+    $wpdb->query($query);
+}
 
 }
 // Installation and uninstallation hooks
