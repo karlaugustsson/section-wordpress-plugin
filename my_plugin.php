@@ -16,7 +16,7 @@ public function __construct(){
 
 if ( is_admin() ){ // admin actions
 
- register_activation_hook( __FILE__, array(&$this , 'ka_create_database_tables' ) );
+ register_activation_hook( __FILE__, array( &$this , 'ka_create_database_tables' ) );
  
  register_uninstall_hook(    __FILE__, array( &$this , 'ka_remove_database_tables' ) );
  
@@ -45,7 +45,7 @@ if ( is_admin() ){ // admin actions
 
 }
 
-add_action("init" , array(&$this , "karla_install" ));
+add_action("init" , array( &$this , "karla_install" ));
 
 }
 
@@ -107,7 +107,34 @@ register_post_type( 'section',
 
  );
 }
+public function ka_create_database_tables(){
+    global $wpdb;
 
+    $charset_colate = $wpdb->get_charset_collate();
+    $tablename = "ka_section_pages";
+
+    $sql = "CREATE TABLE $tablename
+     (id bigint(20) NOT NULL AUTO_INCREMENT,
+      page_id bigint(20) unsigned,
+       section_id bigint(20) unsigned,
+        page_section_position tinyint(3),
+        PRIMARY KEY  (id) , KEY $table_name (id , section_id , page_id) )
+        $charset_colate;
+     ";
+    require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+    dbDelta( $sql );
+}
+
+public function ka_remove_database_tables(){
+    global $wpdb;
+    $tablename = "ka_section_pages";
+
+    if( ! current_user_can("activate_plugins")){
+        return;
+    }
+
+    $wpdb->query("DROP table IF EXISTS $tablename");
+}
 }
 // Installation and uninstallation hooks
 register_activation_hook(__FILE__, array('Ka_section_plugin', 'activate'));
