@@ -137,7 +137,7 @@ public function karla_add_menu_pages(){
  add_menu_page("Section options Page" , " Section Settings" , 'administrator' , "admin_settings_page" , 
  "section_option_page");
 
-add_submenu_page( 'edit.php?post_type=section', 'Reorder sections', 'Reorder sections', 'edit_posts', basename(__FILE__), 'print_reorder_sections_page' );
+add_submenu_page( 'edit.php?post_type=section', 'Reorder sections', 'Reorder sections', 'edit_posts', basename(__FILE__), array($this , 'print_reorder_sections_page') );
 }
 
 public function print_reorder_sections_page(){
@@ -420,8 +420,7 @@ include( plugin_dir_path( __FILE__ ) . "/includes/section_pages_meta_box.php");
 
 
 public function ajax_find_sections(){
- global $ka_page_sections ; 
- // this is how you get access to the database 
+
  
  $page_id = (INT)$_POST['pageID'];
  
@@ -431,14 +430,15 @@ public function ajax_find_sections(){
 
  }
 
- $sections = $ka_page_sections->get_page_sections($page_id);
+ $sections = $this->ka_page_sections->get_page_sections($page_id);
  
  if(empty($sections) == true || $sections == false){
+    
     wp_send_json_success( array("message" => "No sections found to order") );
  
  }else{
 
-    ka_print_section_panels($sections , $page_id);
+    $this->ka_print_section_panels($sections , $page_id);
  }
 
 
@@ -499,13 +499,9 @@ include_once( plugin_dir_path( __FILE__ ) . 'includes/page_sections.php' );
 if(is_admin() == true ){
 
 
-global $ka_section;
-global $ka_pages;
-global $ka_page_sections;
-
- $ka_section = new Ka_section();
- $ka_pages = new Ka_page();
- $ka_page_sections = new KaPageSections($ka_pages,$ka_section);
+ $this->ka_section = new Ka_section();
+ $this->ka_pages = new Ka_page();
+ $this->ka_page_sections = new KaPageSections($this->ka_pages,$this->ka_section);
 
  $this->karla_add_custom_post_type();
 
@@ -580,4 +576,3 @@ register_uninstall_hook(__FILE__, array('Ka_section_plugin','uninstall'));
 // instantiate the plugin class
 Ka_section_plugin::get_instance();
 
-$wp_plugin_template = new Ka_section_plugin();

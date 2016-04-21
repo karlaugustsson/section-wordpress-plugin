@@ -1,6 +1,6 @@
 <?php global $ka_pages;?>
 <?php wp_localize_script( "order_sections", "test", array("site_url" => plugins_url()));?>
-<?php $pages = $ka_pages->getPages();?>
+<?php $pages = $this->ka_pages->getPages();?>
 <h2>Select page to order sections</h2>
 <form  action="#">
 
