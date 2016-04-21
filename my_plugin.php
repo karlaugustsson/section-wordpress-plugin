@@ -50,7 +50,7 @@ add_action("init" , array( &$this , "karla_install" ));
 }
 
 
-public static function deactive(){
+public static function deactivate(){
 
 }
 
@@ -138,6 +138,7 @@ public function ka_remove_database_tables(){
 
 // Installation and uninstallation hooks
 register_activation_hook(__FILE__, array('Ka_section_plugin', 'activate'));
+
 register_deactivation_hook(__FILE__, array('Ka_section_plugin', 'deactivate'));
 
 // instantiate the plugin class
