@@ -12,6 +12,8 @@ License: GPL2
 */
 class Ka_section_plugin{
 
+private static $instance;
+
 public function __construct(){
 
 if ( is_admin() ){ // admin actions
@@ -37,12 +39,19 @@ if ( is_admin() ){ // admin actions
 
 }
 
-$instance = new self();
 
 add_action("init" , array( &$this , "karla_install" ));
 
+
+
 }
 
+public static function get_instance(){
+    if(self::$instance == null){
+    self::$instance = new self;
+    }
+    return self::$instance;
+}
 
 public static function deactivate(){
 
@@ -59,9 +68,9 @@ public static function uninstall(){
 
     $wpdb->query("DROP table IF EXISTS $tablename");
 
-    $this->instance->ka_delete_options();
+    self::$instance->ka_delete_options();
 
-    $this->instance->ka_delete_custom_post_types();
+    self::$instance->ka_delete_custom_post_types();
 
 }
 public function karla_install(){
@@ -142,4 +151,5 @@ register_uninstall_hook(__FILE__, array('Ka_section_plugin','uninstall'));
 
 
 // instantiate the plugin class
+Ka_section_plugin::get_instance();
 $wp_plugin_template = new Ka_section_plugin();
