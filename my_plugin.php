@@ -142,6 +142,8 @@ public function ka_remove_database_tables(){
 // Installation and uninstallation hooks
 register_activation_hook(__FILE__, array('Ka_section_plugin', 'activate'));
 
+register_unistall_hook(__FILE__, array('Ka_section_plugin', 'activate'));
+
 register_deactivation_hook(__FILE__, array('Ka_section_plugin', 'deactivate'));
 
 // instantiate the plugin class
