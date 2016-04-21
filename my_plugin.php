@@ -18,7 +18,8 @@ if ( is_admin() ){ // admin actions
   register_uninstall_hook(    __FILE__, 'ka_delete_custom_post_types' );
 
  add_action( 'admin_init', 'ka_register_section_settings');
- add_action("admin_menu" , 'karla_add_menu_to_admin_menu');
+ add_action("admin_menu" , 'karla_add_menu_pages');
+ add_action( "add_meta_boxes" , "ka_meta_box_func");
  add_filter("manage_section_posts_columns" , "add_section_columns");
  add_action( 'pre_get_posts', 'add_my_post_types_to_query' );
  add_action( 'manage_section_posts_custom_column', 'set_custom_edit_section_columns', 10, 2 );
@@ -29,9 +30,10 @@ if ( is_admin() ){ // admin actions
  add_action( 'wp_ajax_update_section_order', 'ka_ajax_update_section_order' );
 
 } else {
- add_action( 'wp', 'get_sections_by_page' );
+ add_action( 'wp', 'ka_setup_page_sections' );
 
  add_action("wp_head", "ka_print_style");
+
  add_action( 'wp_enqueue_scripts', 'ka_front_scripts_method' ); 
 
 
@@ -41,12 +43,17 @@ if ( is_admin() ){ // admin actions
 
 add_action("init" , "karla_install");
 
+
 $plugin_setting_page = plugin_dir_path( __FILE__ ) . "includes/section_options_page.php";
 
 $ka_pages;
 $ka_section;
 $ka_page_sections;
 
+function ka_meta_box_func(){
+
+ add_meta_box("page_select" , "Section pages" , "karla_section_pages" , "section" ,"side", "low");
+}
 function karla_install(){
 
 include_once( plugin_dir_path( __FILE__ ) . 'includes/page.php' );
@@ -145,18 +152,19 @@ function print_color_settings_heading($args){?>
 
 <?php;}
 
-function karla_add_menu_to_admin_menu(){
+function karla_add_menu_pages(){
 
- add_meta_box("page_select" , "Section pages" , "karla_section_pages" , "section" ,"side", "low");
 
  add_menu_page("Section options Page" , " Section Settings" , 'administrator' , "admin_settings_page" , 
  "section_option_page");
 
 add_submenu_page( 'edit.php?post_type=section', 'Reorder sections', 'Reorder sections', 'edit_posts', basename(__FILE__), 'print_reorder_sections_page' );
 }
+
 function print_reorder_sections_page(){
     include( plugin_dir_path( __FILE__ ) . "/includes/order_sections.php");
 }
+
 function set_custom_edit_section_columns($column , $post_id){
 
 global $ka_page_sections;
@@ -178,35 +186,40 @@ global $ka_page_sections;
  break;
  }
 }
-function have_sections(){
 
-global $ka_section;
 
-return $ka_section->section_query->have_posts();
-
-}
-function the_section(){
-global $ka_section;
-
-return $ka_section->section_query->the_post();
-}
-function get_sections_by_page(){
+function ka_setup_page_sections(){
 
 global $ka_section;
 global $ka_pages;
 global $ka_page_sections;
+
 global $post;
+global $wpdb;
+$sections = array(0);
+
 if($post->ID != null){
-    
-    $ka_query = new Wp_Query();
-    $result = $ka_query->query("SELECT 'section_id' FROM ka_section_pages WHERE page_id = $post->ID;");
+
+    $ka_query = new WP_Query();
+    $query = "SELECT section_id FROM ka_section_pages WHERE page_id = $post->ID;";
+    $result = $wpdb->get_results($query);
 
 
- $ka_section = new Ka_section( array( 'post_type' => "section"  , 'post_status' => array( "publish" , "public" ) , "where__in" => $result) );
+    if( !empty($result) ){
+
+     $sections = array();
+      foreach ($result as $data) {
+            $sections[] = (INT)$data->section_id;
+        }  
+    }
+}
+ $ka_section = new Ka_section( array( 'post_type' => "section"  , 'post_status' => array( "publish" , "public" ) , "post__in" => $sections) );
+
  $ka_pages = new Ka_page();
+ 
  $ka_page_sections = new KaPageSections($ka_pages,$ka_section);
 
-}
+
 
 
  

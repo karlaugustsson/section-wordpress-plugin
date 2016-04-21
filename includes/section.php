@@ -3,7 +3,6 @@ class Ka_section{
 
  	private $sections ;
  	private $post_type  = "section";
-	private $page_section_meta_key = "_page_section";
 	private $current_page = 1;
 	private $total_pages;
 	public $section_query;
@@ -32,12 +31,15 @@ class Ka_section{
 	public function getSections(){
 		return $this->sections;
 	}
-	 private function getAllSections($extra_args){
+	 private function getAllSections($special_args){
 	 	
 	 	if($special_args == null){
+
 	 		$args = array( 'post_type' => $this->post_type  , 'post_status' => array( "publish" , "public" ) );
 	 	}else{
-	 		$args = $extra_args;
+
+	 		$args = $special_args;
+	
 	 	}
 			
 	
@@ -46,6 +48,7 @@ class Ka_section{
 	}
 
 private function section_query($args){
+
 	$loop = new WP_Query( $args );
 
 	$this->section_query = $loop;
