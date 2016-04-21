@@ -20,9 +20,9 @@ if ( is_admin() ){ // admin actions
  
  // register_uninstall_hook(    __FILE__, array( 'Ka_section_plugin' , 'ka_remove_database_tables' ) );
  
- register_uninstall_hook(    __FILE__, array( 'Ka_section_plugin' ,'ka_delete_options') );
+ // register_uninstall_hook(    __FILE__, array( 'Ka_section_plugin' ,'ka_delete_options') );
  
- register_uninstall_hook(    __FILE__, array( 'Ka_section_plugin' ,'ka_delete_custom_post_types' ) );
+ // register_uninstall_hook(    __FILE__, array( 'Ka_section_plugin' ,'ka_delete_custom_post_types' ) );
 
  // add_action( 'admin_init', 'ka_register_section_settings');
  // add_action("admin_menu" , 'karla_add_menu_pages');
@@ -58,9 +58,12 @@ public static function activate(){
 
 }
 public static function uninstall(){
-if(1 == 1){
-    die();
-}
+
+    global $wpdb;
+    $tablename = "ka_section_pages";
+
+
+    $wpdb->query("DROP table IF EXISTS $tablename");
 
 }
 public function karla_install(){
@@ -114,7 +117,7 @@ register_post_type( 'section',
  );
 }
 
-public function ka_create_database_tables(){
+public static function ka_create_database_tables(){
     global $wpdb;
 
     $charset_colate = $wpdb->get_charset_collate();
@@ -132,23 +135,13 @@ public function ka_create_database_tables(){
     dbDelta( $sql );
 }
 
-public static function ka_remove_database_tables(){
-
-    global $wpdb;
-    $tablename = "ka_section_pages";
-
-
-    $wpdb->query("DROP table IF EXISTS $tablename");
-}
 
 }
-
 // Installation and uninstallation hooks
-register_activation_hook(__FILE__, array('Ka_section_plugin', 'activate'));
+register_activation_hook(__FILE__, array('Ka_section_plugin', 'ka_create_database_tables'));
 
 register_uninstall_hook(__FILE__, array('Ka_section_plugin','uninstall'));
 
-register_deactivation_hook(__FILE__, array('Ka_section_plugin', 'deactivate'));
 
 // instantiate the plugin class
 $wp_plugin_template = new Ka_section_plugin();
