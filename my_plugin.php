@@ -57,6 +57,12 @@ public static function deactivate(){
 public static function activate(){
 
 }
+public static function uninstall(){
+if(1 == 1){
+    die();
+}
+
+}
 public function karla_install(){
 
 include_once( plugin_dir_path( __FILE__ ) . 'includes/page.php' );
@@ -125,9 +131,7 @@ public function ka_create_database_tables(){
     require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
     dbDelta( $sql );
 }
-public static function uninstall(){
 
-}
 public static function ka_remove_database_tables(){
 
     global $wpdb;
@@ -142,7 +146,7 @@ public static function ka_remove_database_tables(){
 // Installation and uninstallation hooks
 register_activation_hook(__FILE__, array('Ka_section_plugin', 'activate'));
 
-register_uninstall_hook(__FILE__, array('Ka_section_plugin','ka_remove_database_tables'));
+register_uninstall_hook(__FILE__, array('Ka_section_plugin','uninstall'));
 
 register_deactivation_hook(__FILE__, array('Ka_section_plugin', 'deactivate'));
 
