@@ -18,24 +18,24 @@ public function __construct(){
 
 if ( is_admin() ){ // admin actions
 
- // add_action( 'admin_init', 'ka_register_section_settings');
- // add_action("admin_menu" , 'karla_add_menu_pages');
- // add_action( "add_meta_boxes" , "ka_meta_box_func");
- // add_filter("manage_section_posts_columns" , "add_section_columns");
- // add_action( 'pre_get_posts', 'add_my_post_types_to_query' );
- // add_action( 'manage_section_posts_custom_column', 'set_custom_edit_section_columns', 10, 2 );
- // add_action( 'save_post', 'karl_save_postdata');
- // add_action('before_delete_post' , "karl_delete_section_page_relation");
- // add_action("admin_enqueue_scripts" , "get_them_admin_scripts");
- // add_action( 'wp_ajax_find_sections', 'ajax_find_sections' );
- // add_action( 'wp_ajax_update_section_order', 'ka_ajax_update_section_order' );
+ add_action( 'admin_init', array( &$this ,'ka_register_section_settings') );
+ add_action("admin_menu" , array( &$this , 'karla_add_menu_pages') );
+ add_action( "add_meta_boxes" , array( &$this , "ka_meta_box_func") );
+ add_filter("manage_section_posts_columns" , array( &$this , "add_section_columns"));
+ add_action( 'pre_get_posts', array( &$this , 'add_my_post_types_to_query' ) );
+ add_action( 'manage_section_posts_custom_column', array( &$this , 'set_custom_edit_section_columns', 10, 2 ) );
+ add_action( 'save_post', array( &$this , 'karl_save_postdata' ));
+ add_action('before_delete_post' , array( &$this , "karl_delete_section_page_relation" ) );
+ add_action("admin_enqueue_scripts" , array( &$this , "get_them_admin_scripts") );
+ add_action( 'wp_ajax_find_sections', array( &$this ,'ajax_find_sections' ) );
+ add_action( 'wp_ajax_update_section_order', array( &$this , 'ka_ajax_update_section_order' ) );
 
 } else {
- // add_action( 'wp', 'ka_setup_page_sections' );
+ add_action( 'wp', array( &$this , 'ka_setup_page_sections') );
 
- // add_action("wp_head", "ka_print_style");
+ add_action("wp_head", array( &$this ,"ka_print_style" ) );
 
- // add_action( 'wp_enqueue_scripts', 'ka_front_scripts_method' ); 
+ add_action( 'wp_enqueue_scripts', array( &$this , 'ka_front_scripts_method' ) ); 
 
 }
 
@@ -53,13 +53,6 @@ public static function get_instance(){
     return self::$instance;
 }
 
-public static function deactivate(){
-
-}
-
-public static function activate(){
-
-}
 public static function uninstall(){
 
     global $wpdb;
@@ -162,4 +155,5 @@ register_uninstall_hook(__FILE__, array('Ka_section_plugin','uninstall'));
 
 // instantiate the plugin class
 Ka_section_plugin::get_instance();
+
 $wp_plugin_template = new Ka_section_plugin();
