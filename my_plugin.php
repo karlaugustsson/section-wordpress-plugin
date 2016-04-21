@@ -37,7 +37,7 @@ if ( is_admin() ){ // admin actions
 
 }
 
-$instace = new self();
+$instance = new self();
 
 add_action("init" , array( &$this , "karla_install" ));
 
