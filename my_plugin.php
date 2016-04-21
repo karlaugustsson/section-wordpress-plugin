@@ -37,6 +37,8 @@ if ( is_admin() ){ // admin actions
 
 }
 
+$instace = new self();
+
 add_action("init" , array( &$this , "karla_install" ));
 
 }
@@ -57,9 +59,9 @@ public static function uninstall(){
 
     $wpdb->query("DROP table IF EXISTS $tablename");
 
-    $this->ka_delete_options();
+    $this->instance->ka_delete_options();
 
-    $this->ka_delete_custom_post_types();
+    $this->instance->ka_delete_custom_post_types();
 
 }
 public function karla_install(){
