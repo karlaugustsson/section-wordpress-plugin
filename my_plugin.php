@@ -129,9 +129,7 @@ public static function uninstall(){
 
 }
 public static function ka_remove_database_tables(){
-    if( 1 == 1){
-        die();
-    } 
+
     global $wpdb;
     $tablename = "ka_section_pages";
 
@@ -144,7 +142,7 @@ public static function ka_remove_database_tables(){
 // Installation and uninstallation hooks
 register_activation_hook(__FILE__, array('Ka_section_plugin', 'activate'));
 
-register_uninstall_hook(__FILE__, array('Ka_section_plugin', 'ka_remove_database_tables'));
+register_uninstall_hook(__FILE__, array('Ka_section_plugin','ka_remove_database_tables'));
 
 register_deactivation_hook(__FILE__, array('Ka_section_plugin', 'deactivate'));
 
