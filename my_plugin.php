@@ -14,9 +14,9 @@ class Ka_section_plugin{
 
 private static $instance;
 
-private $plugin_setting_page;
+private $section_post_type_name;
 
-private $ka_pages, $ka_section, $ka_page_sections;
+private $plugin_setting_page , $ka_pages, $ka_section, $ka_page_sections;
 
 public function __construct(){
 $this->plugin_setting_page = plugin_dir_path(__FILE__) . "includes/section_options_page.php";
@@ -456,10 +456,8 @@ public static function get_instance(){
 public static function uninstall(){
 
     global $wpdb;
-    $tablename = "ka_section_pages";
 
-
-    $wpdb->query("DROP table IF EXISTS $tablename");
+    $wpdb->query("DROP table IF EXISTS $this->ka_page_sections->table_name");
 
     self::$instance->ka_delete_options();
 
@@ -524,7 +522,7 @@ public static function ka_create_database_tables(){
       page_id bigint(20) unsigned,
        section_id bigint(20) unsigned,
         page_section_position tinyint(3),
-        PRIMARY KEY  (id) , KEY $table_name (id , section_id , page_id) )
+        PRIMARY KEY  (id) , KEY $ka_page_sections->table_name (id , section_id , page_id) )
         $charset_colate;
      ";
     require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
