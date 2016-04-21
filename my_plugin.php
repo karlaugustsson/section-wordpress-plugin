@@ -61,15 +61,15 @@ $setting_page_slug = "admin_settings_page";
 
 $color_section_name = "color_settings" ; 
 
-add_settings_section( $color_section_name , "Color settings" , "print_color_settings_heading" , $setting_page_slug );
+add_settings_section( $color_section_name , "Color settings" , array($this,"print_color_settings_heading") , $setting_page_slug );
 
-add_settings_field("link_color" , "Link color" , "section_link_hover_color_field" , $setting_page_slug  , $color_section_name );
+add_settings_field("link_color" , "Link color" , array($this , "section_link_hover_color_field") , $setting_page_slug  , $color_section_name );
 
-add_settings_field("link_color_hover" , "Link color hover" , "section_link_color_field" , $setting_page_slug  , $color_section_name );
+add_settings_field("link_color_hover" , "Link color hover" , array($this,"section_link_color_field") , $setting_page_slug  , $color_section_name );
 
-add_settings_field("link_color_active" , "Link color active" , "section_link_active_color_field" , $setting_page_slug  , $color_section_name );
+add_settings_field("link_color_active" , "Link color active" , array($this , "section_link_active_color_field") , $setting_page_slug  , $color_section_name );
 
-register_setting( "color_options" , "color" , "sanitize_hex_color" );
+register_setting( "color_options" , "color" , array($this , "sanitize_hex_color") );
 
 }
 
@@ -83,9 +83,6 @@ public function sanitize_hex_color( $color ) {
     if ( preg_match($pattern, $color["link_color"] ) && preg_match($pattern, $color["link_color_hover"] ) && preg_match($pattern, $color["link_color_active"] ) )
         return $color;
 }
-public function return_option($option_name , $index){
-    return get_option( $option_name )[$index];
-}
 public function section_link_color_field($id){
 
 $option = get_option( 'color' )['link_color'] ;
@@ -95,17 +92,16 @@ $val = ( $option != false ) ? $option : '#00660f';
 public function karl_delete_section_page_relation($postID){
   
     global $wpdb;
-    global $ka_page_sections;
     global $post_type ; 
 
 
         if(current_user_can('delete_post', $postID)){
             switch ($post_type) {
                 case 'section':
-                $ka_page_sections->delete_section_relationships($postID);
+                $this->ka_page_sections->delete_section_relationships($postID);
                 break;
                 case 'page':
-                $ka_page_sections->delete_page_relationships($postID);
+                $this->ka_page_sections->delete_page_relationships($postID);
                 break;
                 
                 default:
@@ -146,10 +142,10 @@ public function print_reorder_sections_page(){
 
 public function set_custom_edit_section_columns($column , $post_id){
 
-global $ka_page_sections;
+
  switch($column){
  case "pages":
- $pages = $ka_page_sections->getSectionPages($post_id);
+ $pages = $this->ka_page_sections->getSectionPages($post_id);
  if(!empty($pages)){
 
  foreach ($pages as $page):?>
@@ -168,10 +164,6 @@ global $ka_page_sections;
 
 
 public function ka_setup_page_sections(){
-
-global $ka_section;
-global $ka_pages;
-global $ka_page_sections;
 
 global $post;
 global $wpdb;
@@ -192,11 +184,11 @@ if($post->ID != null){
         }  
     }
 }
- $ka_section = new Ka_section( array( 'post_type' => "section"  , 'post_status' => array( "publish" , "public" ) , "post__in" => $sections) );
+ $this->ka_section = new Ka_section( array( 'post_type' => "section"  , 'post_status' => array( "publish" , "public" ) , "post__in" => $sections) );
 
- $ka_pages = new Ka_page();
+ $this->ka_pages = new Ka_page();
  
- $ka_page_sections = new KaPageSections($ka_pages,$ka_section);
+ $this->ka_page_sections = new KaPageSections($ka_pages,$ka_section);
 
 
 
@@ -205,17 +197,14 @@ if($post->ID != null){
 }
 public function add_my_post_types_to_query( $query ) {
 
-global $ka_pages;
-global $ka_pages;
-global $ka_page_sections;
 
 if ( $query->is_main_query() ) {
  
  if(!empty($_GET['section_page'])){
-    $page_id = $ka_pages->find_page_by_post_name($_GET['section_page']);
+    $page_id = $this->ka_pages->find_page_by_post_name($_GET['section_page']);
     if($page_id != false){
 
-      $query->set('post__in', $ka_page_sections->get_section_ids_by_page_id((INT)$page_id->ID));  
+      $query->set('post__in', $this->ka_page_sections->get_section_ids_by_page_id((INT)$page_id->ID));  
     } 
     
  
@@ -241,10 +230,8 @@ public function add_section_columns($columns){
 }
 
 public function karla_section_pages(){
- global $post;
- global $ka_pages;
 
-$this->ka_print_pages_checkboxes($post->ID,$ka_pages->getPages());
+$this->ka_print_pages_checkboxes($post->ID,$this->ka_pages->getPages());
 }
 function theme_slug_filter_the_title( $title ) {
 
@@ -281,15 +268,7 @@ public function ka_end_section(){
 
 public function karl_save_postdata( $section_id ) {
 
-global $ka_page_sections;
 global $post;
-// $sections = array( "16" ,"4");
-
-// $pageID = "2";
-
-// $saved = $ka_page_sections->update_section_postition($pageID , $sections);
-
-// print "data was " . $saved;
 
 if($_SERVER['REQUEST_METHOD'] == "POST"){
 
@@ -305,7 +284,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST"){
 
 
  try {
- $ka_page_sections->update_section_pages($posted_pages , $section_id );
+ $this->ka_page_sections->update_section_pages($posted_pages , $section_id );
  
  
  } catch (Exception $e) {
@@ -333,7 +312,6 @@ public static function in_array_r($needle, $haystack, $strict = false) {
 public function ka_print_section_panels($sections , $page_id){?>
 
     
-
 <form id="ka_section_order_form" action="#" method="POST">
 <input type="hidden" value="<?php print $page_id ?>" name="page_id">
 <ul id="section-list" class="ui-sortable">
@@ -358,10 +336,9 @@ public function ka_print_section_panels($sections , $page_id){?>
 
 public function ka_get_section_links(){
  
- global $ka_page_sections;
- global $ka_section ;
 
- $sections = $ka_section->getSections();
+
+ $sections = $this->ka_section->getSections();
 
  foreach ($sections as $section ) {?>
 <a href="" class="ka_section_link" data-section="<?php print $section->post_name;?>">
@@ -373,9 +350,9 @@ public function ka_get_section_links(){
 
 public function section_option_page(){
 
- global $plugin_setting_page ;
 
- include( $plugin_setting_page );
+
+ include( $this->plugin_setting_page ; );
 
 }
 
@@ -412,7 +389,6 @@ public function ka_front_scripts_method(){
 
 public function ka_print_pages_checkboxes($SectionID , $pages ){
 
-global $ka_page_sections;
 
 include( plugin_dir_path( __FILE__ ) . "/includes/section_pages_meta_box.php");
  
@@ -445,14 +421,14 @@ public function ajax_find_sections(){
  wp_die(); // this is required to terminate immediately and return a proper response
 }
 public function ka_ajax_update_section_order($data){
-    global $ka_page_sections;
+    
     $pageID = (  !empty( (INT)$_POST['page_id'])) ? $_POST['page_id'] : null ;
     $section_ids = (  !empty( (INT)$_POST['section_ids'])) ? $_POST['section_ids'] : null ;
     
     if($section_ids != null && $pageID != null ){
         
 
-    $ka_page_sections->attempt_update_page_section_position( $pageID , $section_ids  );
+    $this->ka_page_sections->attempt_update_page_section_position( $pageID , $section_ids  );
 
     print "<span style=\"color:green\">data saved</span>";  
        
