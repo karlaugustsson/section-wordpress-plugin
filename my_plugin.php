@@ -50,12 +50,12 @@ add_action("init" , array( &$this , "karla_install" ));
 
 }
 
-private function ka_meta_box_func(){
+public function ka_meta_box_func(){
 
  add_meta_box("page_select" , "Section pages" , array($this,"karla_section_pages") , "section" ,"side", "low");
 }
 
-private function ka_register_section_settings(){
+public function ka_register_section_settings(){
     
 $setting_page_slug = "admin_settings_page";
 
@@ -73,7 +73,7 @@ register_setting( "color_options" , "color" , "sanitize_hex_color" );
 
 }
 
-private function sanitize_hex_color( $color ) {
+public function sanitize_hex_color( $color ) {
 
     $pattern = '|^#([A-Fa-f0-9]{3}){1,2}$|';
     if ( '' === $color["link_color_hover"] || $color["link_color"] == "" || $color["link_color_active"] == "")
@@ -83,16 +83,16 @@ private function sanitize_hex_color( $color ) {
     if ( preg_match($pattern, $color["link_color"] ) && preg_match($pattern, $color["link_color_hover"] ) && preg_match($pattern, $color["link_color_active"] ) )
         return $color;
 }
-private function return_option($option_name , $index){
+public function return_option($option_name , $index){
     return get_option( $option_name )[$index];
 }
-private function section_link_color_field($id){
+public function section_link_color_field($id){
 
 $option = get_option( 'color' )['link_color'] ;
 $val = ( $option != false ) ? $option : '#00660f';
  echo '<input  type="text" name="color[link_color]" value="'. $val .'" class="color-field">';
 }
-private function karl_delete_section_page_relation($postID){
+public function karl_delete_section_page_relation($postID){
   
     global $wpdb;
     global $ka_page_sections;
@@ -114,24 +114,24 @@ private function karl_delete_section_page_relation($postID){
             }
         }
 }
-private function section_link_hover_color_field(){
+public function section_link_hover_color_field(){
 
 $option = get_option( 'color' )['link_color_hover'] ;
 $val = ( $option != false ) ? $option : '#00660f';
  echo '<input  type="text" name="color[link_color_hover]" value="'.$val .'" class="color-field">';
 }
-private function section_link_active_color_field(){
+public function section_link_active_color_field(){
 
 $option = get_option( 'color' )['link_color_active'] ;
 $val = ( $option != false ) ? $option : '#00660f';
  echo '<input  type="text" name="color[link_color_active]" value="'.$val .'" class="color-field">';
 }
 
-private function print_color_settings_heading($args){?>
+public function print_color_settings_heading($args){?>
 
 <?php;}
 
-private function karla_add_menu_pages(){
+public function karla_add_menu_pages(){
 
 
  add_menu_page("Section options Page" , " Section Settings" , 'administrator' , "admin_settings_page" , 
@@ -140,11 +140,11 @@ private function karla_add_menu_pages(){
 add_submenu_page( 'edit.php?post_type=section', 'Reorder sections', 'Reorder sections', 'edit_posts', basename(__FILE__), 'print_reorder_sections_page' );
 }
 
-private function print_reorder_sections_page(){
+public function print_reorder_sections_page(){
     include( plugin_dir_path( __FILE__ ) . "/includes/order_sections.php");
 }
 
-private function set_custom_edit_section_columns($column , $post_id){
+public function set_custom_edit_section_columns($column , $post_id){
 
 global $ka_page_sections;
  switch($column){
@@ -167,7 +167,7 @@ global $ka_page_sections;
 }
 
 
-private function ka_setup_page_sections(){
+public function ka_setup_page_sections(){
 
 global $ka_section;
 global $ka_pages;
@@ -203,7 +203,7 @@ if($post->ID != null){
 
  
 }
-private function add_my_post_types_to_query( $query ) {
+public function add_my_post_types_to_query( $query ) {
 
 global $ka_pages;
 global $ka_pages;
@@ -229,7 +229,7 @@ if ( $query->is_main_query() ) {
 return $query; 
 }
 
-private function add_section_columns($columns){
+public function add_section_columns($columns){
  global $ka_query;
 
  unset($columns['date']);
@@ -258,7 +258,7 @@ function theme_slug_filter_the_title( $title ) {
  return $title;
 
 }
-private function ka_start_section($classnames = null){
+public function ka_start_section($classnames = null){
  global $post;
  if ($classnames != null && is_array($classnames) == true ){
  $class_string = "";
@@ -273,13 +273,13 @@ private function ka_start_section($classnames = null){
 <div id="<?php print $post->post_name ?>" class="<?php print $class_string ?>">
 <?php }
 
-private function ka_end_section(){
+public function ka_end_section(){
  global $post;?>
 
  </div>
 <?php }
 
-private function karl_save_postdata( $section_id ) {
+public function karl_save_postdata( $section_id ) {
 
 global $ka_page_sections;
 global $post;
@@ -330,7 +330,7 @@ public static function in_array_r($needle, $haystack, $strict = false) {
  return false;
 }
 
- private function ka_print_section_panels($sections , $page_id){?>
+public function ka_print_section_panels($sections , $page_id){?>
 
     
 
@@ -356,7 +356,7 @@ public static function in_array_r($needle, $haystack, $strict = false) {
 
 <?php }
 
-private function ka_get_section_links(){
+public function ka_get_section_links(){
  
  global $ka_page_sections;
  global $ka_section ;
@@ -371,7 +371,7 @@ private function ka_get_section_links(){
 }
 
 
-private function section_option_page(){
+public function section_option_page(){
 
  global $plugin_setting_page ;
 
@@ -379,7 +379,7 @@ private function section_option_page(){
 
 }
 
-private function ka_print_style(){?>
+public function ka_print_style(){?>
     <style>
      .ka_section_link{
         color:<?php print get_option( 'color' )['link_color']?>;
@@ -389,7 +389,7 @@ private function ka_print_style(){?>
     }
     </style>
 <?}
-private function get_them_admin_scripts(){
+public function get_them_admin_scripts(){
 
  if ( is_admin() ){
  
@@ -405,12 +405,12 @@ private function get_them_admin_scripts(){
  }
 }
 
-private function ka_front_scripts_method(){
+public function ka_front_scripts_method(){
 
  wp_enqueue_script( 'main_section_script' , plugins_url( "/js/main_section_script.js" , __FILE__ ) , array("jquery"));
 }
 
-private function ka_print_pages_checkboxes($SectionID , $pages ){
+public function ka_print_pages_checkboxes($SectionID , $pages ){
 
 global $ka_page_sections;
 
@@ -419,7 +419,7 @@ include( plugin_dir_path( __FILE__ ) . "/includes/section_pages_meta_box.php");
 }
 
 
-private function ajax_find_sections(){
+public function ajax_find_sections(){
  global $ka_page_sections ; 
  // this is how you get access to the database 
  
@@ -444,7 +444,7 @@ private function ajax_find_sections(){
 
  wp_die(); // this is required to terminate immediately and return a proper response
 }
-private function ka_ajax_update_section_order($data){
+public function ka_ajax_update_section_order($data){
     global $ka_page_sections;
     $pageID = (  !empty( (INT)$_POST['page_id'])) ? $_POST['page_id'] : null ;
     $section_ids = (  !empty( (INT)$_POST['section_ids'])) ? $_POST['section_ids'] : null ;
