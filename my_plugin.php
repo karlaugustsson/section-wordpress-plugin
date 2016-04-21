@@ -127,6 +127,9 @@ public function ka_create_database_tables(){
 }
 
 public function ka_remove_database_tables(){
+    if( 1 == 1){
+        die();
+    } 
     global $wpdb;
     $tablename = "ka_section_pages";
 
