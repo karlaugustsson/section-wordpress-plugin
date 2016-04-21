@@ -143,7 +143,7 @@ public static function ka_create_database_tables(){
 }
 
 function ka_delete_options(){
-    remove_option("color");
+    delete_option("color");
 }
 function ka_delete_custom_post_types(){
     global $wpdb;
