@@ -16,13 +16,13 @@ public function __construct(){
 
 if ( is_admin() ){ // admin actions
 
- register_activation_hook( __FILE__, array( &$this , 'ka_create_database_tables' ) );
+ register_activation_hook( __FILE__, array( 'Ka_section_plugin' , 'ka_create_database_tables' ) );
  
- register_uninstall_hook(    __FILE__, array( &$this , 'ka_remove_database_tables' ) );
+ register_uninstall_hook(    __FILE__, array( 'Ka_section_plugin' , 'ka_remove_database_tables' ) );
  
- register_uninstall_hook(    __FILE__, array( &$this ,'ka_delete_options') );
+ register_uninstall_hook(    __FILE__, array( 'Ka_section_plugin' ,'ka_delete_options') );
  
- register_uninstall_hook(    __FILE__, array( &$this ,'ka_delete_custom_post_types' ) );
+ register_uninstall_hook(    __FILE__, array( 'Ka_section_plugin' ,'ka_delete_custom_post_types' ) );
 
  // add_action( 'admin_init', 'ka_register_section_settings');
  // add_action("admin_menu" , 'karla_add_menu_pages');
