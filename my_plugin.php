@@ -107,6 +107,7 @@ register_post_type( 'section',
 
  );
 }
+
 public function ka_create_database_tables(){
     global $wpdb;
 
@@ -129,13 +130,12 @@ public function ka_remove_database_tables(){
     global $wpdb;
     $tablename = "ka_section_pages";
 
-    if( ! current_user_can("activate_plugins")){
-        return;
-    }
 
     $wpdb->query("DROP table IF EXISTS $tablename");
 }
+
 }
+
 // Installation and uninstallation hooks
 register_activation_hook(__FILE__, array('Ka_section_plugin', 'activate'));
 register_deactivation_hook(__FILE__, array('Ka_section_plugin', 'deactivate'));
