@@ -34,10 +34,13 @@ class Ka_section{
 	}
 	 private function getAllSections($extra_args){
 	 	
-
-		$args = array( 'post_type' => $this->post_type  , 'post_status' => array( "publish" , "public" ) 	
-		
-	);
+	 	if($special_args == null){
+	 		$args = array( 'post_type' => $this->post_type  , 'post_status' => array( "publish" , "public" ) );
+	 	}else{
+	 		$args = $extra_args;
+	 	}
+			
+	
 	
 		return $this->section_query($args);
 	}

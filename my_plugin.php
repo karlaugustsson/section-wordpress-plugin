@@ -16,6 +16,7 @@ if ( is_admin() ){ // admin actions
  register_uninstall_hook(    __FILE__, 'ka_remove_database_tables' );
   register_uninstall_hook(    __FILE__, 'ka_delete_options' );
   register_uninstall_hook(    __FILE__, 'ka_delete_custom_post_types' );
+
  add_action( 'admin_init', 'ka_register_section_settings');
  add_action("admin_menu" , 'karla_add_menu_to_admin_menu');
  add_filter("manage_section_posts_columns" , "add_section_columns");
@@ -26,10 +27,10 @@ if ( is_admin() ){ // admin actions
  add_action("admin_enqueue_scripts" , "get_them_admin_scripts");
  add_action( 'wp_ajax_find_sections', 'ajax_find_sections' );
  add_action( 'wp_ajax_update_section_order', 'ka_ajax_update_section_order' );
-add_action( 'admin_action_delete', 'testeli' );
-} else {
 
+} else {
  add_action( 'wp', 'get_sections_by_page' );
+
  add_action("wp_head", "ka_print_style");
  add_action( 'wp_enqueue_scripts', 'ka_front_scripts_method' ); 
 
@@ -46,9 +47,6 @@ $ka_pages;
 $ka_section;
 $ka_page_sections;
 
-function testeli(){
-    die("aaaa");
-}
 function karla_install(){
 
 include_once( plugin_dir_path( __FILE__ ) . 'includes/page.php' );
@@ -74,6 +72,7 @@ global $ka_page_sections;
 function ka_register_section_settings(){
 	
 $setting_page_slug = "admin_settings_page";
+
 $color_section_name = "color_settings" ; 
 
 add_settings_section( $color_section_name , "Color settings" , "print_color_settings_heading" , $setting_page_slug );
@@ -159,6 +158,7 @@ function print_reorder_sections_page(){
     include( plugin_dir_path( __FILE__ ) . "/includes/order_sections.php");
 }
 function set_custom_edit_section_columns($column , $post_id){
+
 global $ka_page_sections;
  switch($column){
  case "pages":
@@ -195,14 +195,20 @@ function get_sections_by_page(){
 global $ka_section;
 global $ka_pages;
 global $ka_page_sections;
+global $post;
+if($post->ID != null){
+    
+    $ka_query = new Wp_Query();
+    $result = $ka_query->query("SELECT 'section_id' FROM ka_section_pages WHERE page_id = $post->ID;");
 
- $ka_section = new Ka_section();
+
+ $ka_section = new Ka_section( array( 'post_type' => "section"  , 'post_status' => array( "publish" , "public" ) , "where__in" => $result) );
  $ka_pages = new Ka_page();
-
  $ka_page_sections = new KaPageSections($ka_pages,$ka_section);
- var_dump($ka_page_sections->get_section_ids_by_page_id(get_the_ID()));
-    die();
- //$ka_section = new Ka_section( array("post__in" =>  ) )  ); 
+
+}
+
+
  
 }
 function add_my_post_types_to_query( $query ) {
@@ -275,6 +281,7 @@ function karla_section_pages(){
 ka_print_pages_checkboxes($post->ID,$ka_pages->getPages());
 }
 function theme_slug_filter_the_title( $title ) {
+
  $screen = get_current_screen();
 
  if ( 'section' == $screen->post_type ) {
