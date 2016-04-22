@@ -425,7 +425,7 @@ public static function get_instance(){
 }
 
 public static function return_sections(){
-    return self::$ka_query;
+    return self::$ka_query->get_posts();
 
 }
 
@@ -529,7 +529,7 @@ function ka_get_section_links(){
  
     $class_instance = KA_section_plugin::get_instance();
     $sections = $class_instance->return_sections();
-
+  
 if(!empty($sections)){
      foreach ($sections as $section ):?>
 
@@ -543,11 +543,29 @@ if(!empty($sections)){
 
 }
 
+function ka_start_section($classnames = null){
+ global $post;
+ if ($classnames != null && is_array($classnames) == true ){
+ $class_string = "";
+
+ foreach ($classnames as $classname) {
+ 
+ $class_string .= $classname . " ";
+ }
+ $class_string = chop($class_string); 
+ 
+ }?>
+<div id="<?php print $post->post_name ?>" class="ka_section<?php print $class_string ?>">
+<?php }
+
+function ka_end_section(){?>
+ </div>
+<?php }
 
 function ka_have_sections(){
   $instance = Ka_section_plugin::get_instance() ;
   $test_query = $instance::get_query(); 
-var_dump($test_query->have_posts);
+
 return $test_query->have_posts();
 }
 
