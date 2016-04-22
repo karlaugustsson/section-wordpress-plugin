@@ -12,13 +12,16 @@ License: GPL2
 */
 
 spl_autoload_register( 'simplarity_autoloader' );
-function simplarity_autoloader( $class_name ) {
 
+function simplarity_autoloader( $class_name ) {
 
     $classes_dir = realpath( plugin_dir_path( __FILE__ ) ) . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR;
     $class_file =  $class_name  . '.php';
-
-    require_once $classes_dir . $class_file;
+    if(file_exists($classes_dir . $class_file)){
+        
+        require_once $classes_dir . $class_file;
+    }
+    
   
 }
 class Ka_section_plugin{
