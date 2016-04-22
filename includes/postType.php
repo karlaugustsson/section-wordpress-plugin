@@ -1,6 +1,6 @@
 <?php 
 abstract class postType {
-	
+
 	private $postType ;
 	private $posts;
 
@@ -36,4 +36,42 @@ abstract class postType {
 		return false;
 		
 	}
+
+	public function get_ids_from_post_type($post_type){
+	$id_array = array();
+	foreach ($post_type as $post) {
+		$id_array [] = $post->ID;
+	}
+	return $id_array;
+	}
+
+public function post_exist($id){
+	$result = false;
+	foreach($this->posts as $post){
+		
+		if($post->ID == $id){
+			$result = true;
+		}
+	}
+	return $result;
+}
+public function get_post_title_by_post_name($post_name){
+
+	if( !empty($this->posts)){
+			foreach ($this->posts as $post) {
+
+				if($post->post_name == $post_name){
+
+					$title = $post;;
+				}
+			}
+
+	}
+	if ( $title != null){
+
+		return $title->post_name;
+	}
+	return false;
+}
+
 }
