@@ -335,8 +335,6 @@ public function ka_print_section_panels($sections , $page_id){?>
 
 public function section_option_page(){
 
-
-
  include( $this->plugin_setting_page );
 
 }
@@ -348,6 +346,12 @@ public function ka_print_style(){?>
     }
      .ka_section_link:hover{
         color:<?php print get_option( 'color' )['link_color_hover']?>;
+    }
+         .ka_section_link:active{
+        color:<?php print get_option( 'color' )['link_color_active']?>;
+    }
+    .ka_section_link.active{
+        color:<?php print get_option( 'color' )['link_color_active']?>;
     }
     </style>
 <?}
