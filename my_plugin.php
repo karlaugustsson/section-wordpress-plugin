@@ -188,7 +188,7 @@ if($post->ID != null){
 
  $this->ka_pages = new Ka_page();
  
- $this->ka_page_sections = new KaPageSections($ka_pages,$ka_section);
+ $this->ka_page_sections = new KaPageSections($this->ka_pages,$this->ka_section);
 
 
 
@@ -334,25 +334,11 @@ public function ka_print_section_panels($sections , $page_id){?>
 
 <?php }
 
-public function ka_get_section_links(){
- 
-
-
- $sections = $this->ka_section->getSections();
-
- foreach ($sections as $section ) {?>
-<a href="" class="ka_section_link" data-section="<?php print $section->post_name;?>">
-
-<?php print $section->post_title ;?></a>
-<?php }
-}
-
-
 public function section_option_page(){
 
 
 
- include( $this->plugin_setting_page ; );
+ include( $this->plugin_setting_page );
 
 }
 
@@ -453,6 +439,10 @@ public static function get_instance(){
     return self::$instance;
 }
 
+public static function return_sections(){
+    return self::$instance->ka_section->getSections();
+}
+
 public static function uninstall(){
 
     global $wpdb;
@@ -550,3 +540,18 @@ register_uninstall_hook(__FILE__, array('Ka_section_plugin','uninstall'));
 // instantiate the plugin class
 Ka_section_plugin::get_instance();
 
+function ka_get_section_links(){
+ 
+    $class_instance = KA_section_plugin::get_instance();
+    $ka_section = $class_instance->return_sections();
+
+if(!empty($ka_section)){
+     foreach ($sections as $section ):?>
+
+    <a href="" class="ka_section_link" data-section="<?php print $section->post_name;?>">
+
+    <?php print $section->post_title ;?></a>
+    <?php endforeach;
+}
+
+}
