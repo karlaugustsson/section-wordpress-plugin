@@ -1,5 +1,6 @@
 <?php 
 abstract class postType {
+	
 	private $postType ;
 	private $posts;
 
