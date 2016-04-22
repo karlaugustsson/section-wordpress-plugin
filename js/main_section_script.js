@@ -2,7 +2,7 @@ jQuery(document).ready(function($){
 
 var t;
 
-var t2 = setInterval(update_section_link , 1000);
+var t2 = setInterval(update_section_link , 500);
 
 var sections = $(".ka_section");
 
@@ -43,6 +43,7 @@ clearInterval(t);
 
 t = setTimeout( function(){
 		
+
 		scroll_end_function();
 		
 	},500);	
@@ -58,12 +59,9 @@ function scroll_to_this_section(sectionID,time,offset = 0){
 
         scrollTop: $(sectionID).offset().top + offset
     },time,function(){
-
-    	setTimeout(function(){
+    	
     		lock = false;
 
-    	},200)
-    	
     });
    
 
@@ -82,11 +80,9 @@ function update_section_link(){
 		if(section != false){
 
 			if(section_link_is_active(section.id) == false ){
-				
-				console.log("no active links found");
 
 				var link = get_link_matching_id(section.id);
-				console.log(link);
+			
 				if(link != false){
 					make_all_links_default_color();
 					color_current_link_active(link);
@@ -116,8 +112,12 @@ $(link).addClass("active");
 }
 
 function scroll_end_function(){
+	setTimeout(function(){
+		scrolling = false;
+	},1000)
+	
+	
 
-	scrolling = false;
 	
 }
 
