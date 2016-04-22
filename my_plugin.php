@@ -18,7 +18,6 @@ function simplarity_autoloader( $class_name ) {
     $classes_dir = realpath( plugin_dir_path( __FILE__ ) ) . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR;
     $class_file =  $class_name  . '.php';
     if(file_exists($classes_dir . $class_file)){
-        
         require_once $classes_dir . $class_file;
     }
     
