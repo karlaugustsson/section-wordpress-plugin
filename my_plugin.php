@@ -25,7 +25,7 @@ class Ka_section_plugin{
 
 private static $instance;
 
-private $section_post_type_name;
+private $section_post_type_name = "section";
 
 private $plugin_setting_page , $ka_pages, $ka_section, $ka_page_sections;
 
@@ -56,7 +56,6 @@ if ( is_admin() ){ // admin actions
 
 
 add_action("init" , array( &$this , "karla_install" ));
-
 
 
 }
@@ -195,7 +194,7 @@ if($post->ID != null){
         }  
     }
 }
- $this->ka_section = new Ka_section( array( 'post_type' => "section"  , 'post_status' => array( "publish" , "public" ) , "post__in" => $sections) );
+ $this->ka_section = new Ka_section( $this->section_post_type_name,array( 'post_type' => "section"  , 'post_status' => array( "publish" , "public" ) , "post__in" => $sections) );
 
  $this->ka_pages = new Ka_page();
  
@@ -256,26 +255,6 @@ function theme_slug_filter_the_title( $title ) {
  return $title;
 
 }
-public function ka_start_section($classnames = null){
- global $post;
- if ($classnames != null && is_array($classnames) == true ){
- $class_string = "";
-
- foreach ($classnames as $classname) {
- 
- $class_string .= $classname . " ";
- }
- $class_string = chop($class_string); 
- 
- }?>
-<div id="<?php print $post->post_name ?>" class="<?php print $class_string ?>">
-<?php }
-
-public function ka_end_section(){
- global $post;?>
-
- </div>
-<?php }
 
 public function karl_save_postdata( $section_id ) {
 
@@ -473,7 +452,7 @@ public function karla_install(){
 if(is_admin() == true ){
 
 
- $this->ka_section = new Ka_section();
+ $this->ka_section = new Ka_section($this->section_post_type_name);
  $this->ka_pages = new Ka_page();
  $this->ka_page_sections = new KaPageSections($this->ka_pages,$this->ka_section);
 
@@ -564,4 +543,36 @@ if(!empty($sections)){
     <?php endforeach;
 }
 
+
+
 }
+
+$ka_query = new WP_Query("post_type" , "section");
+
+function have_sections(){
+global $ka_query;
+return $ka_query->have_posts();
+}
+
+function the_section(){
+    global $ka_query;
+    return $ka_query->have_posts();
+}
+function ka_start_section($classnames = null){
+ global $post;
+ if ($classnames != null && is_array($classnames) == true ){
+ $class_string = "";
+
+ foreach ($classnames as $classname) {
+ 
+ $class_string .= $classname . " ";
+ }
+ $class_string = chop($class_string); 
+ 
+ }?>
+<div id="<?php print $post->post_name ?>" class="<?php print $class_string ?>">
+<?php }
+
+function ka_end_section(){?>
+ </div>
+<?php }

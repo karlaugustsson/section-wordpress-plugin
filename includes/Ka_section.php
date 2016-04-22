@@ -5,9 +5,10 @@ class Ka_section{
  	private $post_type  = "section";
 	private $current_page = 1;
 	private $total_pages;
+
 	public $section_query;
 
-	public function __construct($args = null){
+	public function __construct($post_type, $args = null){
 	$args = (isset($args) == true ) ? $args : array();
 	$this->sections = $this->getAllSections($args) ;
 

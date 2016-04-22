@@ -2,7 +2,7 @@
 class Ka_page{
 
 	public $pages , $sections ;
-	private $page_section_meta_key = "_page_section";
+	private $post_type;
 
 	public function __construct($args = null){
 	
