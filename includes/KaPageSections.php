@@ -63,7 +63,7 @@ private function delete_relations_associated_with_section($sectionID){
 	global $wpdb;
 
 		
-		$query = "DELETE FROM $this->table_name WHERE section_id = $sectionID;";
+		$query = "DELETE FROM self::table_name WHERE section_id = $sectionID;";
 		
 		$wpdb->query($query);
 
@@ -79,7 +79,7 @@ private function delete_relations_associated_with_page($pageID){
 	global $wpdb;
 
 		
-		$query = "DELETE FROM $this->table_name WHERE page_id = $pageID;";
+		$query = "DELETE FROM self::table_name WHERE page_id = $pageID;";
 		
 		$wpdb->query($query);
 
@@ -124,7 +124,7 @@ private function destroy_section_page_relationship($pageID , $sectionID){
 	
 	global $wpdb;
 		
-		$query = "DELETE FROM $this->table_name WHERE page_id = $pageID AND section_id = $sectionID;";
+		$query = "DELETE FROM self::table_name WHERE page_id = $pageID AND section_id = $sectionID;";
 		
 	$wpdb->query($query);
 			
@@ -187,7 +187,7 @@ foreach($pages_to_be_removed as $page_id){
 
 private function set_section_page_relationships(){
 	global $wpdb;
-	return $wpdb->get_results("SELECT * FROM $this->table_name ORDER BY page_section_position ASC");
+	return $wpdb->get_results("SELECT * FROM self::table_name ORDER BY page_section_position ASC");
 }
 
 public function get_section_pages_relationships(){
@@ -201,7 +201,7 @@ private function save_section_page_relationship($sectionID ,$pageID ){
 
 		$position = $this->get_next_page_section_pos($pageID , $sectionID);
 		
-		$query = "INSERT INTO $this->table_name (page_id , section_id , page_section_position) values($pageID,$sectionID,$position);";
+		$query = "INSERT INTO self::table_name (page_id , section_id , page_section_position) values($pageID,$sectionID,$position);";
 		
 		if($wpdb->query($query) == false ){
 			
@@ -255,7 +255,7 @@ private function update_section_page_position($sectionID ,$pageID ,$position = n
 			$position = $this->get_next_page_section_pos($pageID , $sectionID);
 		}
 
-		$query = "UPDATE $this->table_name SET page_section_position = $position  WHERE page_id = $pageID AND section_id = $sectionID;";
+		$query = "UPDATE self::table_name SET page_section_position = $position  WHERE page_id = $pageID AND section_id = $sectionID;";
 		
 		if($wpdb->query($query) == false && $wpdb->last_error  != ""){
 			
