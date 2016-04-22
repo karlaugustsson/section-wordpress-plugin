@@ -11,6 +11,16 @@ License: GPL2
 // https://codex.wordpress.org/Plugin_API/Filter_Reference/manage_$post_type_posts_columns
 */
 
+spl_autoload_register( 'simplarity_autoloader' );
+function simplarity_autoloader( $class_name ) {
+
+
+    $classes_dir = realpath( plugin_dir_path( __FILE__ ) ) . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR;
+    $class_file =  $class_name  . '.php';
+
+    require_once $classes_dir . $class_file;
+  
+}
 class Ka_section_plugin{
 
 private static $instance;
@@ -459,9 +469,6 @@ public static function uninstall(){
 }
 public function karla_install(){
 
-include_once( plugin_dir_path( __FILE__ ) . 'includes/page.php' );
-include_once( plugin_dir_path( __FILE__ ) . 'includes/section.php' );
-include_once( plugin_dir_path( __FILE__ ) . 'includes/page_sections.php' );
 
 if(is_admin() == true ){
 
