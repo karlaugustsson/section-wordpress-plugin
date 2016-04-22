@@ -443,7 +443,7 @@ public static function uninstall(){
 
     global $wpdb;
 
-    $wpdb->query("DROP table IF EXISTS $this->ka_page_sections->table_name");
+    $wpdb->query("DROP table IF EXISTS KaPageSections::$table_name");
 
     self::$instance->ka_delete_options();
 
@@ -451,7 +451,6 @@ public static function uninstall(){
 
 }
 public function karla_install(){
-
 
 if(is_admin() == true ){
 

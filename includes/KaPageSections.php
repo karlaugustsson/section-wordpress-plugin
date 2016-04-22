@@ -4,7 +4,7 @@ class KaPageSections{
 	private $sections , $pages,
 	 $page_section_relationship_data;
 
-	 public $table_name = "ka_section_pages";
+	 public static $table_name = "ka_section_pages";
 
 public function __construct(Ka_page $pages ,Ka_section $sections){
 		
