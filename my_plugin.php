@@ -70,6 +70,7 @@ public function ka_register_section_settings(){
 $setting_page_slug = "admin_settings_page";
 
 $color_section_name = "color_settings" ; 
+
 if(get_option( 'color' ) == false){
     $values =
         array(
@@ -82,20 +83,27 @@ if(get_option( 'color' ) == false){
     update_option("color" , $values);
 
 }
+
 add_settings_section( $color_section_name , "Color settings" , array($this,"print_color_settings_heading") , $setting_page_slug );
+
+
 
 add_settings_field("link_color" , "Link color" , array($this , "section_link_hover_color_field") , $setting_page_slug  , $color_section_name );
 
 add_settings_field("link_color_hover" , "Link color hover" , array($this,"section_link_color_field") , $setting_page_slug  , $color_section_name );
 
-add_settings_field("link_color_active" , "Link color active" , array($this , "section_link_active_color_field") , $setting_page_slug  , $color_section_name );
+add_settings_field("link_color_active" , "Link color active" , array($this , "section_link_active_color_field") , $setting_page_slug , $color_section_name  );
+
+add_settings_field("link_menu_offset" , "link menu offset number" , array($this , "link_menu_offset_field") , $setting_page_slug , $color_section_name);
 
 register_setting( "color_options" , "color" , array($this , "sanitize_hex_color") );
 
 
 
 }
-
+public function sanitize_int($data){
+    return $data;
+}
 public function sanitize_hex_color( $color ) {
 
     $pattern = '|^#([A-Fa-f0-9]{3}){1,2}$|';
@@ -146,9 +154,14 @@ $option = get_option( 'color' )['link_color_active'] ;
 $val = ( $option != false ) ? $option : '#00660f';
  echo '<input  type="text" name="color[link_color_active]" value="'.$val .'" class="color-field">';
 }
+public function link_menu_offset_field(){
+    $option = get_option("color")['link_menu_offset'];
+    $val = ($option  == null) ? 0 : $option;
+   echo '<input type="text" name="color[link_menu_offset]" value="' . $val . '">';
 
+}
 public function print_color_settings_heading($args){?>
-
+    
 <?php;}
 
 public function karla_add_menu_pages(){
@@ -367,13 +380,16 @@ public function get_them_admin_scripts(){
   
   wp_enqueue_script('jquery-ui-sortable'); //load sortable
 
-  
+
  }
 }
 
 public function ka_front_scripts_method(){
-
+$option = array(
+     "offset" => get_option("color")['link_menu_offset']
+    );
  wp_enqueue_script( 'main_section_script' , plugins_url( "/js/main_section_script.js" , __FILE__ ) , array("jquery"));
+  wp_localize_script( 'main_section_script', 'sectionOBJ', $option );
 }
 
 public function ka_print_pages_checkboxes($SectionID , $pages ){

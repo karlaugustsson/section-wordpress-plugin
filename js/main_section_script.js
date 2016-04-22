@@ -54,11 +54,11 @@ t = setTimeout( function(){
 
 
 function scroll_to_this_section(sectionID,time,offset = 0){
-
+console.log(sectionOBJ.offset);
    $('html, body').animate({
 
-        scrollTop: $(sectionID).offset().top + offset
-    },time,function(){
+        scrollTop: $(sectionID).offset().top -  sectionOBJ.offset
+    },function(){
     	
     		lock = false;
 
