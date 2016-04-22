@@ -212,7 +212,7 @@ if($post->ID != null){
 
 
 
-    $query = "SELECT section_id FROM ka_section_pages WHERE page_id = $post->ID;";
+    $query = "SELECT section_id FROM ka_section_pages WHERE page_id = $post->ID ORDER BY page_section_position;";
     $result = $wpdb->get_results($query);
 
   
