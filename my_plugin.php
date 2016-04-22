@@ -70,7 +70,18 @@ public function ka_register_section_settings(){
 $setting_page_slug = "admin_settings_page";
 
 $color_section_name = "color_settings" ; 
+if(get_option( 'color' ) == false){
+    $values =
+        array(
+        
+        "link_color_hover" => "#00af46" ,
+        "link_color" => "#00af46" ,
+        "link_color_active" => "#00af46" 
+    );
 
+    update_option("color" , $values);
+
+}
 add_settings_section( $color_section_name , "Color settings" , array($this,"print_color_settings_heading") , $setting_page_slug );
 
 add_settings_field("link_color" , "Link color" , array($this , "section_link_hover_color_field") , $setting_page_slug  , $color_section_name );
@@ -81,15 +92,7 @@ add_settings_field("link_color_active" , "Link color active" , array($this , "se
 
 register_setting( "color_options" , "color" , array($this , "sanitize_hex_color") );
 
-if(get_option( 'color' )['link_color'] == false){
-    add_option("color[link_color]" , "#00af46");
-}
-if(get_option( 'color' )['link_color_hover'] == false){
-    add_option("color[link_color_hover]" , "#00af46");
-}
-if(get_option( 'color' )["link_color_active"] == false){
-    add_option("color[link_color_active]" , "#00af46");
-}
+
 
 }
 
@@ -131,6 +134,7 @@ public function karl_delete_section_page_relation($postID){
         }
 }
 public function section_link_hover_color_field(){
+$option = get_option( 'color' ) ;
 
 $option = get_option( 'color' )['link_color_hover'] ;
 $val = ( $option != false ) ? $option : '#00660f';
