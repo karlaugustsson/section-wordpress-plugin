@@ -10,6 +10,7 @@ License: GPL2
 
 // https://codex.wordpress.org/Plugin_API/Filter_Reference/manage_$post_type_posts_columns
 */
+
 class Ka_section_plugin{
 
 private static $instance;
@@ -27,7 +28,7 @@ if ( is_admin() ){ // admin actions
  add_action( "add_meta_boxes" , array( &$this , "ka_meta_box_func") );
  add_filter("manage_section_posts_columns" , array( &$this , "add_section_columns"));
  add_action( 'pre_get_posts', array( &$this , 'add_my_post_types_to_query' ) );
- add_action( 'manage_section_posts_custom_column', array( &$this , 'set_custom_edit_section_columns', 10, 2 ) );
+ add_action( 'manage_section_posts_custom_column', array( &$this , 'set_custom_edit_section_columns' ),10, 2 );
  add_action( 'save_post', array( &$this , 'karl_save_postdata' ));
  add_action('before_delete_post' , array( &$this , "karl_delete_section_page_relation" ) );
  add_action("admin_enqueue_scripts" , array( &$this , "get_them_admin_scripts") );
@@ -168,7 +169,7 @@ public function ka_setup_page_sections(){
 global $post;
 global $wpdb;
 $sections = array(0);
-
+ 
 if($post->ID != null){
 
     $ka_query = new WP_Query();
@@ -230,7 +231,7 @@ public function add_section_columns($columns){
 }
 
 public function karla_section_pages(){
-
+    global $post;
 $this->ka_print_pages_checkboxes($post->ID,$this->ka_pages->getPages());
 }
 function theme_slug_filter_the_title( $title ) {
@@ -278,12 +279,14 @@ if($_SERVER['REQUEST_METHOD'] == "POST"){
  }
 
  if($posted_pages == null){
+
  $posted_pages = array();
  }
 
 
 
  try {
+
  $this->ka_page_sections->update_section_pages($posted_pages , $section_id );
  
  
@@ -543,9 +546,9 @@ Ka_section_plugin::get_instance();
 function ka_get_section_links(){
  
     $class_instance = KA_section_plugin::get_instance();
-    $ka_section = $class_instance->return_sections();
+    $sections = $class_instance->return_sections();
 
-if(!empty($ka_section)){
+if(!empty($sections)){
      foreach ($sections as $section ):?>
 
     <a href="" class="ka_section_link" data-section="<?php print $section->post_name;?>">

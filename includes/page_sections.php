@@ -4,7 +4,7 @@ class KaPageSections{
 	private $sections , $pages,
 	 $page_section_relationship_data;
 
-	 public$table_name = "ka_section_pages";
+	 public $table_name = "ka_section_pages";
 
 public function __construct(Ka_page $pages ,Ka_section $sections){
 		
@@ -110,8 +110,10 @@ public function section_has_page($pageID , $sectionID){
 	$result = false;
 
 	foreach ($this->get_section_pages_relationships() as $relationdata){
-		
+	
+
 		if($relationdata->page_id == $pageID && $relationdata->section_id == $sectionID){
+	
 			$result = true ; 
 		}
 	}
@@ -135,7 +137,7 @@ private function destroy_section_page_relationship($pageID , $sectionID){
 public function get_section_ids_by_page_id($pageID){
 	
 	$we_belong_together = $this->page_section_relationship_data;
-	var_dump($we_belong_together);
+	
  	$result = array();
 
 	foreach ($we_belong_together as $carey) {
@@ -151,7 +153,6 @@ public function get_section_ids_by_page_id($pageID){
 public function update_section_pages( $posted_pages , $sectionID ){
 
 
-
 //remove pages that does not exist from post_data
 $i = 0;
 foreach( $posted_pages as $pageID ):
@@ -159,6 +160,7 @@ foreach( $posted_pages as $pageID ):
 
 	if ( !$this->pages->page_exist( $pageID ) ){
 		unset($posted_pages[$i]);
+
 	}else{
 		$posted_pages[$i] = (INT)$pageID; 
 	}
@@ -189,6 +191,7 @@ private function set_section_page_relationships(){
 }
 
 public function get_section_pages_relationships(){
+
 	return $this->page_section_relationship_data;
 }
 private function save_section_page_relationship($sectionID ,$pageID ){
