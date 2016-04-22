@@ -28,7 +28,7 @@ private static $instance;
 private $section_post_type_name = "section";
 
 private $plugin_setting_page , $ka_pages, $ka_section, $ka_page_sections;
-
+public static $ka_query;
 public function __construct(){
 $this->plugin_setting_page = plugin_dir_path(__FILE__) . "includes/section_options_page.php";
 if ( is_admin() ){ // admin actions
@@ -181,11 +181,12 @@ $sections = array(0);
  
 if($post->ID != null){
 
-    $ka_query = new WP_Query();
+
+
     $query = "SELECT section_id FROM ka_section_pages WHERE page_id = $post->ID;";
     $result = $wpdb->get_results($query);
 
-
+  
     if( !empty($result) ){
 
      $sections = array();
@@ -194,15 +195,7 @@ if($post->ID != null){
         }  
     }
 }
- $this->ka_section = new Ka_section( $this->section_post_type_name,array( 'post_type' => "section"  , 'post_status' => array( "publish" , "public" ) , "post__in" => $sections) );
-
- $this->ka_pages = new Ka_page();
- 
- $this->ka_page_sections = new KaPageSections($this->ka_pages,$this->ka_section);
-
-
-
-
+ self::$ka_query = new WP_Query( array( 'post_type' => $this->section_post_type_name  , 'post_status' => array( "publish" , "public" ) , "post__in" => $sections) );
  
 }
 public function add_my_post_types_to_query( $query ) {
@@ -229,7 +222,7 @@ return $query;
 }
 
 public function add_section_columns($columns){
- global $ka_query;
+
 
  unset($columns['date']);
  unset($columns['author']);
@@ -432,7 +425,8 @@ public static function get_instance(){
 }
 
 public static function return_sections(){
-    return self::$instance->ka_section->getSections();
+    return self::$ka_query;
+
 }
 
 public static function uninstall(){
@@ -507,7 +501,9 @@ public static function ka_create_database_tables(){
     require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
     dbDelta( $sql );
 }
-
+public static function get_query(){
+    return self::$ka_query;
+}
 function ka_delete_options(){
     delete_option("color");
 }
@@ -547,32 +543,18 @@ if(!empty($sections)){
 
 }
 
-$ka_query = new WP_Query("post_type" , "section");
 
-function have_sections(){
-global $ka_query;
-return $ka_query->have_posts();
+function ka_have_sections(){
+  $instance = Ka_section_plugin::get_instance() ;
+  $test_query = $instance::get_query(); 
+var_dump($test_query->have_posts);
+return $test_query->have_posts();
 }
 
-function the_section(){
-    global $ka_query;
-    return $ka_query->have_posts();
+function ka_section(){
+    $instance = Ka_section_plugin::get_instance() ;
+     $test_query = $instance::get_query(); 
+
+    return $test_query->the_post();
 }
-function ka_start_section($classnames = null){
- global $post;
- if ($classnames != null && is_array($classnames) == true ){
- $class_string = "";
 
- foreach ($classnames as $classname) {
- 
- $class_string .= $classname . " ";
- }
- $class_string = chop($class_string); 
- 
- }?>
-<div id="<?php print $post->post_name ?>" class="<?php print $class_string ?>">
-<?php }
-
-function ka_end_section(){?>
- </div>
-<?php }
