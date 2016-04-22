@@ -442,8 +442,8 @@ public static function return_sections(){
 public static function uninstall(){
 
     global $wpdb;
-
-    $wpdb->query("DROP table IF EXISTS KaPageSections::$table_name");
+    $name = KaPageSections::$table_name;
+    $wpdb->query("DROP table IF EXISTS $name");
 
     self::$instance->ka_delete_options();
 
