@@ -81,6 +81,16 @@ add_settings_field("link_color_active" , "Link color active" , array($this , "se
 
 register_setting( "color_options" , "color" , array($this , "sanitize_hex_color") );
 
+if(get_option( 'color' )['link_color'] == false){
+    add_option("color[link_color]" , "#00af46");
+}
+if(get_option( 'color' )['link_color_hover'] == false){
+    add_option("color[link_color_hover]" , "#00af46");
+}
+if(get_option( 'color' )["link_color_active"] == false){
+    add_option("color[link_color_active]" , "#00af46");
+}
+
 }
 
 public function sanitize_hex_color( $color ) {
@@ -96,7 +106,7 @@ public function sanitize_hex_color( $color ) {
 public function section_link_color_field($id){
 
 $option = get_option( 'color' )['link_color'] ;
-$val = ( $option != false ) ? $option : '#00660f';
+$val = ( $option != false )? $option : '#00660f';
  echo '<input  type="text" name="color[link_color]" value="'. $val .'" class="color-field">';
 }
 public function karl_delete_section_page_relation($postID){
@@ -141,7 +151,7 @@ public function karla_add_menu_pages(){
 
 
  add_menu_page("Section options Page" , " Section Settings" , 'administrator' , "admin_settings_page" , 
- "section_option_page");
+ array($this,"section_option_page"));
 
 add_submenu_page( 'edit.php?post_type=section', 'Reorder sections', 'Reorder sections', 'edit_posts', basename(__FILE__), array($this , 'print_reorder_sections_page') );
 }
