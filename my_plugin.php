@@ -482,7 +482,7 @@ if(is_admin() == true ){
 
 
  $this->ka_section = new Ka_section($this->section_post_type_name);
- $this->ka_pages = new Ka_page();
+ $this->ka_pages = new Ka_page("page");
  $this->ka_page_sections = new KaPageSections($this->ka_pages,$this->ka_section);
 
  $this->karla_add_custom_post_type();

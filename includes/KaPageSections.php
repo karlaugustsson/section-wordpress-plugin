@@ -32,7 +32,7 @@ public function getSectionPages($sectionID){
 		$sectionPages = array();
 
 			foreach ($sectionPagesIds as $page_id ) {
-			$sectionPages[] = $this->pages->getPage($page_id);
+			$sectionPages[] = $this->pages->getPost($page_id);
 
 			}
 		
@@ -300,9 +300,9 @@ private function get_next_page_section_pos($pageid){
 public function getSectionsByPagePostname($post_name){
 	
 	try {
-		$page = $this->pages->find_page_by_post_name($post_name);
+		$page = $this->pages->get_post_title_by_post_name($post_name);
 
-		$sections = $this->sections->filter_sections_by_page_id($page->ID);
+		$sections = $this->filter_sections_by_page_id($page->ID);
 	
 		return $sections;
 	} catch (Exception $e) {
@@ -310,7 +310,18 @@ public function getSectionsByPagePostname($post_name){
 	}
 
 }
+private function filter_sections_by_page_id($pageID){
+	$relation_data = $this->get_section_pages_relationships();
+	$result = array();
 
+	foreach ( $relation_data as $data) {
+		if($data->page_id == $pageID ){
+			$result[] = $this->sections->getPost($data->post_id);
+		}
+	}
+	return (empty($result) == false) ? $result : false;
+
+}
 private function get_pages_to_remove($sectionID , $pages_to_be_added){
 	$pages_to_remove = array();
 	

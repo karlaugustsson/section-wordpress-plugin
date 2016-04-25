@@ -1,4 +1,4 @@
 <?php
-class Ka_section extends postType{
+class Ka_section extends PostType{
 
 }

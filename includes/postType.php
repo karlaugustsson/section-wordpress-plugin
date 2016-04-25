@@ -1,5 +1,5 @@
 <?php 
-abstract class postType {
+abstract class PostType {
 
 	private $postType ;
 	private $posts;
