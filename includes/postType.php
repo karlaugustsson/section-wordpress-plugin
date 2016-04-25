@@ -8,20 +8,23 @@ abstract class PostType {
 	 	
 	 if($args == null){
 
-	 		$args = array( 'post_type' => $this->postType , 'post_status' => array( "publish" , "public" ) );
+	 		$args = array( 'post_type' => $post_type , 'post_status' => array( "publish" , "public" ) );
 	 }
 
 	 $loop = new WP_Query( $args );
 
 
-	$posts = $loop->get_posts();
+	$this->posts = $loop->get_posts();
 
 	}
 	public function getPost($post_id){
-		$all_posts = $posts;
-
-		foreach( $posts as $post){
+		
+		$all_posts = $this->posts;
+	
+		foreach ( $all_posts as $post ){
+			
 			if($post_id == $post->ID) {
+
 				return $post;
 			}
 		}
@@ -67,6 +70,7 @@ public function get_post_title_by_post_name($post_name){
 			}
 
 	}
+
 	if ( $title != null){
 
 		return $title->post_name;

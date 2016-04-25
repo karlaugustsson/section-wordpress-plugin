@@ -29,13 +29,14 @@ public function update_section_postition($pageID , $section_ids){
 public function getSectionPages($sectionID){
 
 		$sectionPagesIds = $this->get_section_page_ids($sectionID);
+
 		$sectionPages = array();
 
 			foreach ($sectionPagesIds as $page_id ) {
+		
 			$sectionPages[] = $this->pages->getPost($page_id);
 
 			}
-		
 		return $sectionPages;
 }
 
@@ -95,7 +96,7 @@ public function get_page_sections($pageID){
 	
 	foreach($section_ids as $section_id){
 		
-		$section = $this->sections->getSection($section_id);
+		$section = $this->sections->getPost($section_id);
 		
 		if($section != false){
 			$result[] = $section;
@@ -158,7 +159,7 @@ $i = 0;
 foreach( $posted_pages as $pageID ):
 
 
-	if ( !$this->pages->page_exist( $pageID ) ){
+	if ( !$this->pages->post_exist( $pageID ) ){
 		unset($posted_pages[$i]);
 
 	}else{
@@ -311,15 +312,19 @@ public function getSectionsByPagePostname($post_name){
 
 }
 private function filter_sections_by_page_id($pageID){
+
 	$relation_data = $this->get_section_pages_relationships();
 	$result = array();
 
 	foreach ( $relation_data as $data) {
+
 		if($data->page_id == $pageID ){
-			$result[] = $this->sections->getPost($data->post_id);
+
+			$result[] = $this->sections->getPost($data->section_id);
 		}
 	}
-	return (empty($result) == false) ? $result : false;
+	var_dump($result);
+	return  $result ;
 
 }
 private function get_pages_to_remove($sectionID , $pages_to_be_added){

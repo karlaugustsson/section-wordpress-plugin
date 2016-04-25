@@ -185,6 +185,7 @@ public function set_custom_edit_section_columns($column , $post_id){
  switch($column){
  case "pages":
  $pages = $this->ka_page_sections->getSectionPages($post_id);
+
  if(!empty($pages)){
 
  foreach ($pages as $page):?>
@@ -233,7 +234,7 @@ public function add_my_post_types_to_query( $query ) {
 if ( $query->is_main_query() ) {
  
  if(!empty($_GET['section_page'])){
-    $page_id = $this->ka_pages->find_page_by_post_name($_GET['section_page']);
+    $page_id = $this->ka_pages->get_post_title_by_post_name($_GET['section_page']);
     if($page_id != false){
 
       $query->set('post__in', $this->ka_page_sections->get_section_ids_by_page_id((INT)$page_id->ID));  
@@ -263,7 +264,7 @@ public function add_section_columns($columns){
 
 public function karla_section_pages(){
     global $post;
-$this->ka_print_pages_checkboxes($post->ID,$this->ka_pages->getPages());
+$this->ka_print_pages_checkboxes($post->ID,$this->ka_pages->getPosts());
 }
 function theme_slug_filter_the_title( $title ) {
 
@@ -564,7 +565,7 @@ function ka_get_section_links(){
  
     $class_instance = KA_section_plugin::get_instance();
     $sections = $class_instance->return_sections();
-  
+    
 if(!empty($sections)){
      foreach ($sections as $section ):?>
 
